@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Client</title>
+    <link rel="stylesheet" href="../css/homeCl.css">
+    <link rel="stylesheet" href="../../Sidebar/css/Sidebar.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navbar -->
+        <header>
+            <nav>
+                <!-- Aquí iría tu navbar principal -->
+                <p>Navbar aquí</p>
+            </nav>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-info">
+                <img src="../images/user-icon.png" alt="Usuario" class="avatar">
+                <p>Usuario</p>
+            </div>
+            <ul class="menu">
+                <li><a href="homeClient.html">Home</a></li>
+                <li><a href="ajustesClient.html">Ajustes</a></li>
+                <li><a href="explorarClient.html">Explorar</a></li>
+            </ul>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content" id="main-content">
+            <div class="cards">
+                <section class="main-card">
+                    <div class="card-content">
+                        <!-- Contenido izquierdo -->
+                        <div class="content-left">
+                            <img class="full-img" src="../images/sample-product.jpg" alt="Imagen del producto">
+                        </div>
+                        <!-- Contenido derecho -->
+                        <div class="content-right">
+                            <h2 class="EmprenName">Nombre del Emprendimiento</h2>
+                            <p>Descripción del emprendimiento aquí.</p>
+                            <button class="like-button">
+                                <img class="icon" src="/src/images/heartIcon.png" alt="Corazón">
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="../../Sidebar/javaScript/Sidebar.js"></script>
+    <script>
+        // Cargar el sidebar en el contenedor especificado
+        loadSidebar("sidebarContainer");
+    </script>
+    <script src="../javascript/homeClient.js"></script>
+</body>
+</html>

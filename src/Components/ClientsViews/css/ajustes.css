@@ -1,0 +1,132 @@
+body {
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+}
+
+#app {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: #f8f8f8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.main-card {
+    position: relative;
+    width: 700px;
+    height: 500px;
+    max-width: 90%;
+    padding: 20px;
+    margin-left: 220px; /* Da espacio al sidebar */
+    border-radius: 15px;
+    background-color: #5d5fef;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    align-items: center;
+    text-align: center;
+}
+
+.edit-profile {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 15px;
+    background-color: #5810b5;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    font-size: medium;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+    font-size: 1.5em;
+    color: #fff;
+    margin: 30px;
+}
+
+.main-card p {
+    color: #ddd;
+    margin: 5px 0;
+}
+
+/* Media query para dispositivos pequeños */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 150px; /* Reduce el ancho del sidebar */
+        height: auto;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-radius: 0;
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 90%;
+        margin-left: 160px; /* Asegura que haya espacio para el sidebar */
+        padding: 15px;
+    }
+}
+
+/* Media query para dispositivos extra pequeños */
+@media (max-width: 480px) {
+    .sidebar {
+        display: none; /* Oculta el sidebar en dispositivos muy pequeños */
+    }
+
+    .main-card {
+        width: 100%;
+        max-width: 95%;
+        margin-left: 0; /* Centra la tarjeta cuando el sidebar está oculto */
+        padding: 10px;
+    }
+
+    .profile-img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .user-name {
+        font-size: 1.2em;
+    }
+
+    .edit-profile {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+}
