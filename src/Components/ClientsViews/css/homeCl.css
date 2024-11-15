@@ -1,87 +1,70 @@
 body {
-    background-color: #000; /* Fondo negro */
-    color: #fff; /* Color de texto blanco para mejor visibilidad */
-    margin: 0; /* Opcional: quita los márgenes predeterminados */
-    font-family: Arial, sans-serif; /* Fuente predeterminada */
-}
-
-.main-card {
-    position: relative;
-    width: 900px;
-    height: 370px;
-    margin-top: 100px;
-    border-radius: 10px;
-    font-family: 'neuzeit-grotesk', sans-serif;
-    font-weight: 300;
-    font-style: normal;
-    font-size: 1em;
-    line-height: 1.5;
+    background-color: #000;
     color: #fff;
-    background-color: #5810b5;
-    box-shadow: 0 40px 40px -20px #8fc7d544;
+    margin: 0;
+    font-family: Arial, sans-serif;
 }
 
-.main-card .card-content {
-    position: relative;
+.main-content {
     display: flex;
+    gap: 20px;
+}
+
+.content {
+    margin-left: 220px; /* Espacio para el sidebar */
     width: 100%;
-    height: 100%;
-    padding: 50px;
+    max-width: 1200px;
+    padding: 10px;
 }
 
-.main-card .content-left {
-    position: relative;
-    width: 300px;
-    height: 100%;
+/* Estilo para la barra de búsqueda */
+.search-bar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar input {
+    width: 80%;
+    max-width: 500px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Estilo para las tarjetas de emprendimientos */
+.emprendimientos-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background-color: #5d5fef;
+    padding: 20px;
     border-radius: 10px;
-    overflow: hidden;
-    background-color: #f6f6f6;
+    display: flex;
+    align-items: center;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.main-card .content-left img {
-    width: inherit;
-    height: inherit;
-    object-fit: cover;
-    object-position: center;
-}
-
-.main-card .content-right {
-    position: relative;
-    width: calc(100% - 300px);
-    height: 100%;
-    padding-left: 35px;
-}
-
-.main-card .tag {
-    position: relative;
-    left: 100%;
-    transform: translateX(-100%);
-    width: fit-content;
-    padding: 8px 25px;
+.card img {
+    width: 100px;
+    height: 100px;
     border-radius: 10px;
-    background-color: #005AEE;
-    padding-top: 30px;
+    margin-right: 20px;
 }
 
-.main-card .tag h6 {
-    color: #fff;
-    font-size: .75em;
-    font-weight: 700;
-    letter-spacing: 2px;
+.card .content {
+    flex-grow: 1;
 }
 
-.EmprenName {
-    color: #fff;
-    font-size: xx-large;
-    font-weight: 900;
-}
-
-.icon {
-    width: 50px;
-    height: 50px;
-    background-color: #5810b5;
-}
-
-.like-button {
-    background-color: #5810b5;
+.card .like-button {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
