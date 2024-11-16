@@ -36,7 +36,7 @@ body {
     height: 500px;
     max-width: 90%;
     padding: 20px;
-    margin-left: 220px; /* Da espacio al sidebar */
+    margin-left: 140px; /* Da espacio al sidebar */
     border-radius: 15px;
     background-color: #5d5fef;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
