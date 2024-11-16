@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register emprendedor</title>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/ClienteOEmp.css">
+
+</head>
+<body>
+    <header>
+    </header>
+    <body>
+       
+    <div id="card1">
+        
+        <div id="card1-content">
+            <button class="close-button" onclick=" closeView()">  × </button>
+            <div id="card1-title">
+                <h1 class='h2-1'> Registrarse</h1>
+                <h3 class='h3'>Inicia la aventura de emprender, promocionar y dar a conocer tu negocio</h3>
+            </div>
+            <form method="post" class="form1" action="/register">
+                
+                <input id="nombreCompleto" name="nombre" class="form1-content" type="text" required  placeholder="Nombre Completo" />
+
+              
+                <input id="contacto" name="contacto" class="form1-content" type="tel" required placeholder="Contacto"/>
+
+                
+                <input id="direccion" name="direccion" class="form1-content" type="text" required placeholder="Dirección"/>
+
+                
+                <input id="user1-password" name="contrasenna" class="form1-content" type="password" required placeholder="Contraseña" />
+
+                
+                <input id="user2-password" name="confirmcontrasenna" class="form1-content" type="password" required placeholder="Confirma tu contraseña" />
+
+                
+                <input id="nombreNegocio" name="negocio" class="form1-content" type="text" required placeholder="Nombre de tu negocio" />
+
+                
+                <textarea id="descripcionNegocio" name="descripción" class="form1-content" type="text" placeholder="Escribe aquí la descripción del negocio..." rows="1"></textarea>
+
+
+                <input id="submit-boton" type="submit" name="submit" value="Register" />
+
+            </form>
+            <button type="button" class="btn-go-to-login" onclick="window.location.href='/login';">¿Ya eres emprendedor? Sign in.</button>
+
+        </div>
+    </div>
+    <script src="../js/RegisterJS.js"></script>
+</body>
+</html>

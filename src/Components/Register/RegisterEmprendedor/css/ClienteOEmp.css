@@ -1,0 +1,230 @@
+#card1 {
+    position: relative;
+    background: #000000;
+    border-radius: 8px;
+    box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.65);
+    height: auto;
+    margin: 6rem auto 8.1rem auto;
+    width: 850px;
+    
+    align-items: start;
+    align-content: start;
+  }
+  #card1-content {
+    padding: 12px 44px;
+    display: grid;
+    flex-direction: column; 
+    gap: 10px;
+  }
+  #card1-title {
+    font-family: "Raleway Thin", sans-serif;
+    letter-spacing: 0.5px;
+    padding-bottom: 1px;
+    padding-top: 13px;
+    text-align: center;
+    font-size: 22px;
+  
+    img {
+        align-items: start;
+    }
+  }
+  h2{
+    padding-top: 23px;
+  }
+  #signup {
+    color: #2dbd6e;
+    font-family: "Raleway", sans-serif;
+    font-size: 10pt;
+    margin-top: 16px;
+    text-align: center;
+  }
+  #submit-boton {
+    background: -webkit-linear-gradient(right, #2b2a3c, #38127b);
+    border: none;
+    border-radius: 21px;
+    box-shadow: 0px 1px 8px #86a58e;
+    cursor: pointer;
+    color: white;
+    font-family: "Raleway Bold", sans-serif;
+    height: 42.3px;
+    margin: 0 auto;
+    margin-top: 20px;
+    transition: 0.25s;
+    width: 50%;
+    font-size: 18px;
+  }
+  #submit-boton:hover {
+    box-shadow: 0px 1px 18px #24c64f;
+  }
+  .form1 {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    color: rgb(250, 245, 245);
+  }
+  
+  .form1-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .form1-border {
+    background: -webkit-linear-gradient(right, #552698, #8d67ce);
+    height: 1px;
+    width: 100%;
+  }
+  .form1-content {
+    background: #191919;
+    border: 10px;
+    border-color: #8d67ce;
+    width: 100%;
+    padding-top: 14px;
+    color: rgb(255, 255, 255);
+    flex: 1;
+    text-align:start;
+    height: 40px; /* Ajusta el tamaño del input */
+    padding: 10px 10px; /* Ajusta el padding superior e inferior */
+    border-radius: 11px; 
+    outline: 3px solid #a57bee; /* Contorno morado */ 
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 17px;
+    margin-bottom: 17px;
+    padding-left: 10px; /* Padding a los lados del input */;
+    padding-right: 10px; /* Padding a los lados del input */;
+    font-family: "Raleway SemiBold", sans-serif; /* La misma fuente que el input */
+    font-size: 16px;
+    
+  
+  }
+  
+  .label1  {
+    color: rgb(255, 255, 255);
+  }
+  
+  .h2-1  {
+    color: rgb(246, 242, 242);
+    padding-bottom: 0.5px;
+    padding-top: 20px;
+    font-style:normal;
+  }
+  
+  .h3{
+    font-size:22px;
+    font-weight: 400;
+    text-align: center;
+    color: rgb(246, 242, 242);
+    font-family: "Raleway Thin", sans-serif;
+    font-stretch: ultra-expanded;
+  
+  
+  }
+  
+  legend {
+    color: #24c64f;
+  }
+  
+  .icon {
+    width: 30px;
+    height: 30px;
+  }
+  .btn-go-to-login {
+    background: -webkit-linear-gradient(right, #2b2a3c, #38127b);
+    border: none;
+    border-radius: 21px;
+    box-shadow: 0px 1px 8px #86a58e;
+    cursor: pointer;
+    color: white;
+    font-family: "Raleway SemiBold", sans-serif;
+    height: 42.3px;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom:30px ;
+    transition: 0.25s;
+    width: 50%;
+    font-size: 18px;
+  }
+  
+  
+  .btn-go-to-login:hover {
+    box-shadow: 0px 1px 18px #24c64f;
+  }
+  
+  input::placeholder {
+    font-family: "Raleway Thin", sans-serif;
+    color: white; /* Puedes ajustar el color del placeholder aquí */
+    font-stretch: ultra-expanded;
+    font-style:inherit;
+  }
+  
+  
+  input:valid {
+    color:#E8F0FE;
+    background-color: #191919;
+  }
+  
+  /* Por defecto, ocultamos el contenedor de los errores */
+  .error-messages {
+    display: none; /* El contenedor de errores está oculto */
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    border: 1px solid #f5c6cb;
+    font-family: "Raleway SemiBold", sans-serif;
+    width: 70%;
+    font-size: 16px;
+    align-self: center;
+  }
+  
+  .error-messages p {
+    margin: 5px 0;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: "Raleway SemiBold", sans-serif;
+  
+  }
+  
+  
+  /* Change the white to any color */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #191919 inset !important;  /* Custom color here */
+  }
+  
+  /*Change text in autofill textbox*/
+  input:-webkit-autofill{
+    -webkit-text-fill-color: white!important;
+  }
+  
+  .close-button {
+    position:absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: gray;
+    font-size: 55px;
+    margin: 10px;
+  }
+  
+  /* Agregar un efecto cuando se pasa el ratón sobre la "X" */
+  .close-button:hover {
+    color: red;
+  }
+
+
+  textarea::placeholder{
+    color: white;
+  }
+
+  #descripcionNegocio {
+    resize: none; /* Evita que el usuario pueda cambiar el tamaño del textarea */
+    height: 300px; /* Ajusta la altura según tus necesidades */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+}
