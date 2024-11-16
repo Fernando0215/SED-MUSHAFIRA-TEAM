@@ -14,29 +14,27 @@ async function login(req, res) {
   const db = await connectDB();
 
   try {
-    // Buscar usuario en la colección de clientes
-    const cliente = await db.collection('clientes').findOne({ correoElectronico });
+    // Buscar cliente
+    const cliente = await db.collection('clientes').findOne({ correo: correoElectronico });
     if (cliente && await bcrypt.compare(contrasenna, cliente.contrasenna)) {
-      // Genera un token JWT y envía una respuesta si es cliente
       const token = jwt.sign({ id: cliente._id, role: 'cliente' }, JWT_SECRET, { expiresIn: '1h' });
       return res.json({ message: 'Cliente autenticado', token, role: 'cliente' });
     }
 
-    // Buscar usuario en la colección de emprendedores
-    const emprendedor = await db.collection('emprendimientos').findOne({ correo: correoElectronico });
-    if (emprendedor && await bcrypt.compare(contrasenna, emprendedor.password)) {
-      // Genera un token JWT y envía una respuesta si es emprendedor
-      const token = jwt.sign({ id: emprendedor._id, role: 'emprendedor' }, JWT_SECRET, { expiresIn: '1h' });
+    // Buscar emprendimiento
+    const emprendimiento = await db.collection('emprendimientos').findOne({ correo: correoElectronico });
+    if (emprendimiento && await bcrypt.compare(contrasenna, emprendimiento.password)) {
+      const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, JWT_SECRET, { expiresIn: '1h' });
       return res.json({ message: 'Emprendedor autenticado', token, role: 'emprendedor' });
     }
 
-    // Si no se encontró el usuario
     return res.status(404).json({ error: 'Usuario no encontrado. Por favor regístrate.' });
   } catch (error) {
     console.error('Error en autenticación:', error);
     return res.status(500).json({ error: 'Error interno en el servidor' });
   }
 }
+
 
 // Función de registro (por si quieres manejar el registro aquí también)
 async function register(req, res) {

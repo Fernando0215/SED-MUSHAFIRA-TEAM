@@ -6,14 +6,7 @@ const bcrypt = require('bcrypt');
 async function createCliente(req, res) {
     const clienteData = req.body;
 
-    // Validación de campos requeridos
-    if (
-        !clienteData.nombre ||
-        !clienteData.apellido ||
-        !clienteData.infoContacto ||
-        !clienteData.correoElectronico ||
-        !clienteData.contrasenna
-    ) {
+    if (!clienteData.nombre || !clienteData.apellido || !clienteData.infoContacto || !clienteData.correoElectronico || !clienteData.contrasenna) {
         return res.status(400).json({ error: "Todos los campos obligatorios deben estar presentes" });
     }
 
@@ -21,7 +14,6 @@ async function createCliente(req, res) {
     const clientesCollection = db.collection('clientes');
 
     try {
-        // Verificar si el cliente ya existe (por correo electrónico o contacto)
         const clienteExistente = await clientesCollection.findOne({
             $or: [
                 { correoElectronico: clienteData.correoElectronico },
@@ -33,17 +25,15 @@ async function createCliente(req, res) {
             return res.status(400).json({ error: "Cliente ya registrado con este correo o información de contacto" });
         }
 
-        // Encriptar la contraseña
         const hashedPassword = await bcrypt.hash(clienteData.contrasenna, 10);
 
-        // Insertar el nuevo cliente en la base de datos
         const resultado = await clientesCollection.insertOne({
             nombre: clienteData.nombre,
             apellido: clienteData.apellido,
             fotoPerfil: clienteData.fotoPerfil || "",
             infoContacto: clienteData.infoContacto,
             correoElectronico: clienteData.correoElectronico,
-            contrasenna: hashedPassword, // Guardar contraseña encriptada
+            contrasenna: hashedPassword,
         });
 
         res.status(201).json({ message: 'Cliente registrado con éxito', clienteId: resultado.insertedId });
@@ -55,7 +45,7 @@ async function createCliente(req, res) {
 
 // Función para actualizar datos del cliente loggeado
 async function updateClienteLoggeado(req, res) {
-    const clienteId = req.usuario.id; // Extraemos el ID del token
+    const clienteId = req.usuario.id;
     const updateData = req.body;
 
     const db = await connectDB();
@@ -80,7 +70,7 @@ async function updateClienteLoggeado(req, res) {
 
 // Función para eliminar el cliente loggeado
 async function deleteClienteLoggeado(req, res) {
-    const clienteId = req.usuario.id; // Extraemos el ID del token
+    const clienteId = req.usuario.id;
 
     const db = await connectDB();
     const clientesCollection = db.collection('clientes');
@@ -99,8 +89,26 @@ async function deleteClienteLoggeado(req, res) {
     }
 }
 
+// Función para obtener el perfil del cliente autenticado
+async function obtenerPerfilCliente(req, res) {
+    const clienteId = req.usuario.id;
+    const db = await connectDB();
+
+    try {
+        const cliente = await db.collection('clientes').findOne({ _id: new ObjectId(clienteId) });
+        if (!cliente) {
+            return res.status(404).json({ mensaje: 'Cliente no encontrado' });
+        }
+        res.json(cliente);
+    } catch (error) {
+        console.error('Error al obtener cliente:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+}
+
 module.exports = {
     createCliente,
     updateClienteLoggeado,
     deleteClienteLoggeado,
+    obtenerPerfilCliente
 };

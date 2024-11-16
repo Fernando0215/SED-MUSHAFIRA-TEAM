@@ -3,10 +3,9 @@ const Joi = require('joi');
 const esquemaCliente = Joi.object({
     nombre: Joi.string().required(),
     apellido: Joi.string().required(),
-    correo: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
+    correoElectronico: Joi.string().email().required(),
+    contrasenna: Joi.string().min(6).required(),
     infoContacto: Joi.string().required(),
-    fechaRegistro: Joi.date().iso().required(), // Validación ISO 8601 para fechas
     fotoPerfil: Joi.string().optional(), // Campo opcional
 });
 
