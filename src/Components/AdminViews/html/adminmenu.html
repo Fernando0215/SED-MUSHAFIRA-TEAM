@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/adminmenu.css">
+  <title>Emprendedor</title>
+</head>
+<body>
+  <div class="sidebar neon-border">
+    <div class="profile">
+      <input type="file" id="upload-profile" class="upload-input" accept="image/*" style="display: none;">
+      <label for="upload-profile" class="upload-label-profile">Upload Image</label>
+      <img id="profile-image" class="profile-image" src="" alt="Profile Image" style="display: none;">
+      <p class="username">Nombre</p>
+    </div>
+  
+    <nav>
+      <a href="adminmenu.html" class="active">Home</a>
+      <a href="adminajustes.html">Ajustes</a>
+      <a href="admincomments.html">Comentarios</a>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="banner">
+        <input type="file" id="upload-banner" class="upload-input" accept="image/*">
+        <label for="upload-banner" class="upload-label">Upload Image</label>
+        <img id="banner-image" class="banner-image" src="" alt="Banner Image" style="display: none;">
+    </div>
+      
+
+    <div class="container">
+      <button id="add-product-btn">+</button>
+      <div id="product-list" class="product-list">
+        <!-- Aquí se añadirán dinámicamente los productos -->
+      </div>
+    </div>
+  
+    </div>
+
+    <!-- Modal para añadir producto -->
+    <div id="product-modal" class="modal">
+      <div class="modal-content">
+          <span id="close-modal" class="close">&times;</span>
+          <h2>Añadir Producto</h2>
+          <input type="file" id="upload-product-image" accept="image/*">
+          <input type="name" id="product-name" placeholder="Nombre">
+          <input type="text" id="product-description" placeholder="Descripción">
+          <input type="number" id="product-price" placeholder="Precio">
+          <button id="save-product-btn">Guardar</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="../javaScript/banner.js"></script>
+  <script src="../javaScript/homeprofile.js"></script>
+  <script src="../javaScript/addproduct.js"></script>
+</body>
+</html>
