@@ -28,7 +28,7 @@ function loadCards() {
         {
             title: "Food Express",
             description: "Ullamcorper amet dolor donec",
-            imageUrl: "/SED-MUSHAFIRA-TEAM/src/images/iglesiaIcon.jpeg",
+            imageUrl: "../../../images/iglesiaIcon.jpeg",
             likes: 21500,
             comments: 12500
         },
@@ -65,6 +65,8 @@ function loadCards() {
 
         // Añadir la tarjeta al grid
         cardGrid.appendChild(card);
+
+
     });
 
     searchInput.addEventListener("input", (e) => {
