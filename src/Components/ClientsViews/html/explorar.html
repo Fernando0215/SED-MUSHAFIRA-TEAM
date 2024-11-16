@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Cliente</title>
-    <link rel="stylesheet" href="../css/homeCl.css">
+    <title>Explorar Cliente</title>
+    <link rel="stylesheet" href="../css/explorar.css">
     <link rel="stylesheet" href="../../Sidebar/css/Sidebar.css">
     <link rel="stylesheet" href="../../Navbar/css/navbar.css">
 </head>
@@ -23,23 +23,21 @@
                 <input type="text" placeholder="Buscar..." id="searchInput">
             </div>
 
-            <!-- Tarjetas de emprendimientos -->
-            <div class="emprendimientos-cards" id="emprendimientosContainer">
-                <!-- Tarjetas dinámicas se insertarán aquí -->
-            </div>
+            <!-- Grid de tarjetas -->
+            <div class="card-grid" id="cardGrid"></div>
         </main>
     </div>
 
     <script src="../../Sidebar/javaScript/Sidebar.js"></script>
     <script src="../../Navbar/javaScript/navbar.js"></script>
-    <script src="../javaScript/HomeClient.js"></script>
+    <script src="../javaScript/Explorar.js"></script>
     <script>
         // Cargar el sidebar y la navbar
         loadSidebar("sidebarContainer");
         loadNavbar("navbarContainer");
 
-        // Cargar tarjetas dinámicamente en HomeClient.js
-        loadEmprendimientos();
+        // Cargar tarjetas
+        loadCards();
     </script>
 </body>
 </html>

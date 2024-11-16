@@ -6,29 +6,24 @@
     <title>Ajustes Cliente</title>
     <link rel="stylesheet" href="../css/ajustes.css">
     <link rel="stylesheet" href="../../Sidebar/css/Sidebar.css">
+    <link rel="stylesheet" href="../../Navbar/css/navbar.css">
 </head>
 <body>
-    <div id="app">
-        <!-- Sidebar -->
-        <div id="sidebarContainer" class="sidebar">
-            <div class="user-info">
-                <img src="../../images/userIcon.png" alt="Usuario" class="avatar">
-                <p>Usuario</p>
-            </div>
-            <ul class="menu">
-                <li><a href="/Home-Cliente"><span>🏠</span> Home</a></li>
-                <li><a href="/Ajustes-Cliente"><span>📷</span> Ajustes</a></li>
-                <li><a href="/Explorar-Cliente"><span>🌍</span> Explorar</a></li>
-            </ul>
-        </div>
+    <!-- Navbar -->
+    <div id="navbarContainer"></div>
 
-        <!-- Contenido principal -->
-        <main class="main-content">
+    <!-- Contenido principal (ahora con margen superior para evitar superposición) -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div id="sidebarContainer" class="sidebar"></div>
+
+        <!-- Contenido principal de la página -->
+        <main class="content">
             <div class="cards">
                 <section class="main-card" id="ajustes">
                     <button class="edit-profile">Editar perfil</button>
                     <div class="profile-content">
-                        <img class="profile-img" src="/src/images/ImgChat.png" alt="Imagen de usuario">
+                        <img class="profile-img" src="/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" alt="Imagen de usuario">
                         <h2 class="user-name">Name LastName</h2>
                         <p>Email: 00103722@uca.edu.sv</p>
                         <p>Numero de telefono: 7789 5279</p>
@@ -39,10 +34,11 @@
     </div>
 
     <script src="../../Sidebar/javaScript/Sidebar.js"></script>
+    <script src="../../Navbar/javaScript/navbar.js"></script>
     <script>
-        // Cargar el sidebar en el contenedor especificado
+        // Cargar el sidebar y la navbar en los contenedores especificados
         loadSidebar("sidebarContainer");
+        loadNavbar("navbarContainer");
     </script>
-    <script src="../javaScript/AjustesClient.js"></script>
 </body>
 </html>

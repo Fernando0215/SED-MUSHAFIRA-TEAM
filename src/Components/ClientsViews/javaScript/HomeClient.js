@@ -1,64 +1,46 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const BASE_URL = "https://red-lucky-cuttlefish.cyclic.app/api/v1";
-    const cardsContainer = document.getElementById("cards");
+function loadEmprendimientos() {
+    const emprendimientosContainer = document.getElementById("emprendimientosContainer");
+    const searchInput = document.getElementById("searchInput");
 
-    // Función para obtener los emprendimientos de la API
-    const fetchEmprendimientos = async () => {
-        try {
-            const response = await fetch(`${BASE_URL}/emprendimientos`);
-            const data = await response.json();
-            renderEmprendimientos(data.data);
-        } catch (error) {
-            console.error("Error al obtener productos", error);
-        }
-    };
+    const emprendimientos = [
+        { id: 1, nombre: "El corral", descripcion: "Lorem ipsum dolor sit amet", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
+        { id: 2, nombre: "Coffee Place", descripcion: "Aliquam pretium sit odio non", imagen: "/SED-MUSHAFIRA-TEAM/src/images/lessIcon.png" },
+        { id: 3, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
+        { id: 4, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
+        { id: 5, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
+        { id: 6, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
 
-    // Función para renderizar los emprendimientos en la página
-    const renderEmprendimientos = (emprendimientos) => {
-        cardsContainer.innerHTML = ""; // Limpiar contenido previo
-        emprendimientos.forEach((emprendimiento) => {
-            const card = document.createElement("section");
-            card.classList.add("main-card");
+    ];
+
+    function displayEmprendimientos(filteredEmprendimientos) {
+        emprendimientosContainer.innerHTML = ""; // Limpiar contenedor
+
+        filteredEmprendimientos.forEach(emp => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+
             card.innerHTML = `
-                <div class="card-content">
-                    <div class="content-left">
-                        <button>
-                            <img class="full-img" src="${emprendimiento.imagenEmprendimiento}" alt="${emprendimiento.nombreEmprendimiento}">
-                        </button>
-                    </div>
-                    <div class="content-right">
-                        <h2 class="EmprenName">${emprendimiento.nombreEmprendimiento}</h2>
-                        <p>${emprendimiento.descripcion}</p>
-                        <button class="like-button" data-id="${emprendimiento._id}">
-                            <div class="tag">
-                                <img class="icon" src="../images/heartIcon.png" alt="Corazón">
-                            </div>
-                        </button>
-                    </div>
+                <img src="${emp.imagen}" alt="${emp.nombre}">
+                <div class="content">
+                    <h3>${emp.nombre}</h3>
+                    <p>${emp.descripcion}</p>
                 </div>
+                <button class="like-button">❤️</button>
             `;
-            cardsContainer.appendChild(card);
+
+            emprendimientosContainer.appendChild(card);
         });
-    };
+    }
 
-    // Función para manejar el clic en el botón "like"
-    const handleLikeClick = (emprendimientoId) => {
-        const likeButton = document.querySelector(`button[data-id="${emprendimientoId}"] .icon`);
-        if (likeButton.src.includes("heartIcon.png")) {
-            likeButton.src = "images/heartFullIcon.png";
-        } else {
-            likeButton.src = "images/heartIcon.png";
-        }
-    };
+    // Mostrar todos los emprendimientos al cargar la página
+    displayEmprendimientos(emprendimientos);
 
-    // Evento para capturar los clics en los botones "like"
-    cardsContainer.addEventListener("click", (e) => {
-        if (e.target.closest(".like-button")) {
-            const emprendimientoId = e.target.closest(".like-button").dataset.id;
-            handleLikeClick(emprendimientoId);
-        }
+    // Evento para filtrar cuando el usuario escribe en la barra de búsqueda
+    searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase();
+        const filteredEmprendimientos = emprendimientos.filter(emp =>
+            emp.nombre.toLowerCase().includes(query)
+        );
+        displayEmprendimientos(filteredEmprendimientos);
     });
-
-    // Ejecutar la función para obtener y mostrar los emprendimientos al cargar la página
-    fetchEmprendimientos();
-});
+}
