@@ -1,0 +1,200 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    display: flex;
+    font-family: Arial, sans-serif;
+    background-color: #2d2a45;
+    padding: 20px;
+  }
+
+  /*Sidebar*/
+  
+  .sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px;
+  }
+  
+  .profile {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .username {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333 !important;
+  }
+  
+  nav a {
+    display: block;
+    padding: 15px;
+    color: #555;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  nav a.active {
+    color: #6200ea;
+    font-weight: bold;
+  }
+  
+  .main {
+    flex: 1;
+    padding: 40px;
+    color: #ffffff;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  /* Efecto de luces de neón en el borde del menú */
+  .neon-border {
+    width: 250px;
+    height: 100vh;
+    padding: 20px;
+    background-color: #ffffff;
+    color: #fff;
+    box-shadow: 0 0 5px #f7edff, 0 0 10px #ecddfa, 0 0 20px #eedeff;
+    border: 0.5px solid #bdbdbd;
+    border-radius: 30px;
+  }
+  
+  .upload-input {
+    display: none; /* Oculta el input real */
+  }
+
+  .upload-label {
+    display: inline-block;
+    background-color: #6618af;
+    color: #fff;
+    padding: 12px 24px;
+    font-size: 16px;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+.profile-image {
+    width: 100px;  /* Tamaño del círculo */
+    height: 100px; /* Tamaño del círculo */
+    border-radius: 50%; /* Hace la imagen circular */
+    object-fit: cover; /* Asegura que la imagen se ajuste dentro del círculo sin deformarse */
+    display: block; /* Para mostrar la imagen */
+    cursor: pointer;
+}
+
+.upload-label-profile {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #6c63ff;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Header con barra de búsqueda */
+header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-bar {
+    width: 300px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Contenedor de tarjetas */
+.emprendimientos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estilo de las tarjetas */
+.card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    color: #333;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.card-info {
+    flex: 1;
+}
+
+.card-info h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.card-info p {
+    margin: 3px 0;
+    font-size: 14px;
+}
+
+.card-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-buttons button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.button-accept {
+    background-color: #4caf50;
+}
+
+.button-decline {
+    background-color: #f44336;
+}
