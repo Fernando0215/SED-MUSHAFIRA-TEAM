@@ -5,111 +5,76 @@ document.addEventListener("DOMContentLoaded", () => {
     form.prepend(errorMessagesContainer);
 
     const showErrorMessages = (messages) => {
-        errorMessagesContainer.innerHTML = ''; // Clear previous messages
+        errorMessagesContainer.innerHTML = ''; // Limpiar mensajes previos
         messages.forEach((message) => {
             const errorElement = document.createElement('p');
-            
-        // Añadir un icono antes del mensaje
-             errorElement.textContent = '⚠️ ' + message;
+            errorElement.textContent = '⚠️ ' + message;
             errorMessagesContainer.appendChild(errorElement);
         });
     };
 
-    function closeView() {
-        // Redirigir a otra vista (por ejemplo, "otra-vista.html")
-        window.location.href = 'HomeClient.html';  // O el URL al que quieras redirigir
-    }
-
-
-
     form.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Prevent the default form submission
-
-
-        console.log("Form submission prevented."); // Debug log
-        // Clear previous error messages
+        event.preventDefault(); // Evitar el envío predeterminado del formulario
+    
+        // Limpiar mensajes de error previos
         errorMessagesContainer.innerHTML = '';
-
-        // Get form data
+    
+        // Obtener datos del formulario
         const formData = new FormData(form);
-        const data = {
-            nombre: formData.get('nombre'),
-            apellido: formData.get('apellido'),
-            imagenCliente: formData.get('imagenCliente'),
-            infoContacto: formData.get('infoContacto'),
-            correoElectronico: formData.get('correoElectronico'),
-            contrasenna: formData.get('contrasenna'),
-            confirmcontrasenna: formData.get('confirmcontrasenna')
-        };
-
-        console.log('Contrasenna:', data.contrasenna);
-        console.log('Confirm Contrasenna:', data.confirmcontrasenna);
-
-
-        // Form validation
-        const validationErrors = validateForm(data);
-
-        console.log(validationErrors);
-
-        if (validationErrors.length > 0) {
-            console.log("Errors found, showing error messages"); // Debug log
-            errorMessagesContainer.style.display = 'block'; // Mostrar el contenedor
-            showErrorMessages(validationErrors);
-            return ; // Stop the function if there are errors
-        }
-
-
-        // Sending data to the server using fetch (POST request)
+    
         try {
-            const response = await fetch('/register', {
+            // Enviar datos al servidor
+            const response = await fetch('http://localhost:3000/clientes/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: formData,
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Hubo un error al procesar la solicitud');
+                throw new Error(errorData.error || 'Error al registrar al cliente');
             }
-
-            // Show confirmation message
+    
+            // Redirigir al login después del registro exitoso
             alert('Usuario creado con éxito');
-            form.reset(); // Reset form fields
-
-            // Optionally, redirect to login page after success
-            window.location.href = '/login';
+            window.location.href = '../../../Login/LoginEmp/html/LoginEmprendedor.html';
         } catch (error) {
+            // Mostrar el error devuelto por el servidor
             showErrorMessages([error.message]);
         }
     });
+    
 
-    // Form validation function
-    const validateForm = (data) => {
+    // Validar formulario
+    const validateForm = (formData) => {
         const errors = [];
 
-        // Check if passwords match
-        if (data.contrasenna != data.confirmcontrasenna) {
+        // Verificar contraseñas coinciden
+        if (formData.get('contrasenna') !== formData.get('confirmcontrasenna')) {
             errors.push('Las contraseñas no coinciden');
         }
 
-        // Check if email is valid
-        if (!validateEmail(data.correoElectronico)) {
+        // Validar correo electrónico
+        if (!validateEmail(formData.get('correoElectronico'))) {
             errors.push('Por favor ingrese un correo electrónico válido');
         }
 
-        // Check for empty fields
-        Object.keys(data).forEach((key) => {
-            if (!data[key]) {
+        // Verificar campos vacíos
+        ['nombre', 'apellido', 'infoContacto', 'correoElectronico', 'contrasenna'].forEach((key) => {
+            if (!formData.get(key)) {
                 errors.push(`${key.charAt(0).toUpperCase() + key.slice(1)} es obligatorio`);
             }
         });
 
+        // Validar imagen
+        const fotoPerfil = formData.get('fotoPerfil');
+        if (fotoPerfil && !['image/png', 'image/jpeg'].includes(fotoPerfil.type)) {
+            errors.push('La imagen debe ser PNG o JPEG');
+        }
+
         return errors;
     };
 
-    // Email validation function
+    // Validar correo electrónico
     const validateEmail = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return regex.test(email);

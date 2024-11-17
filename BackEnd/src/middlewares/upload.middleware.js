@@ -1,20 +1,20 @@
 const multer = require('multer');
+const path = require('path');
 
-// Configuración básica de multer
+// Configuración de multer (usando memoria para trabajar con GridFS)
+const storage = multer.memoryStorage();
 const upload = multer({
-    dest: 'uploads/', // Carpeta temporal donde se guardarán los archivos subidos
-    limits: { fileSize: 5 * 1024 * 1024 }, // Tamaño máximo de archivo: 5MB
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // Tamaño máximo: 5 MB
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Solo se permiten imágenes en formato .jpeg, .jpg, .png'));
+    },
 });
 
-// Uso en una ruta
-app.post('/upload', upload.single('imagen'), (req, res) => {
-    try {
-        const file = req.file; // El archivo subido estará disponible aquí
-        if (!file) {
-            return res.status(400).send('No se subió ningún archivo');
-        }
-        res.status(200).send({ message: 'Archivo subido con éxito', file });
-    } catch (error) {
-        res.status(500).send({ error: 'Error al subir el archivo', details: error.message });
-    }
-});
+module.exports = upload;
