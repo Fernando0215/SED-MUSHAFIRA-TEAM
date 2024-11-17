@@ -1,0 +1,138 @@
+#card2 {
+  background: #262050;
+    border-radius: 30px;
+    box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.65);
+    height: 600px;
+    margin: 6rem auto 8.1rem auto;
+    width: 850px;
+    color: white;
+  }
+  #card2-content {
+    padding: 12px 44px;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+
+
+  }
+  #card2-title {
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 4px;
+    text-align: center;
+    box-sizing: border-box;
+   
+  }
+
+  #title{
+    font-family: "Smooch Sans", sans-serif;
+    font-weight:bolder;
+    color: white;
+    width: 100%;
+    font-size: 90px;
+    margin-bottom: 6px;
+    margin-block-start: 4px;
+    padding-block-start: 0px;
+    
+  }
+
+  #sub-title{
+    font-family: "Poppins", sans-serif;
+    color: white;
+    font-size: 15px;
+    margin-left: 4px;
+    margin-right: 4px;
+    letter-spacing: 0.8px;
+
+
+  }
+
+  .h2{
+ 
+    font-weight: 700;
+    font-size: 60px;
+  
+    
+  }
+  #signup2 {
+    color: #2dbd6e;
+    font-family: "Poppins", sans-serif;
+
+    font-size: 10pt;
+    margin-top: 16px;
+    text-align: center;
+  }
+  #submit2-btn {
+    background: -webkit-linear-gradient(right, #7e53ce, #705ab8);
+    border: none;
+    border-radius: 21px;
+    box-shadow: 0px 1px 8px #2d236a;
+    cursor: pointer;
+    color: white;
+    
+
+    transition: 0.25s;
+    
+    
+  }
+  #submit2-btn:hover {
+    box-shadow: 0px 1px 18px #411679;
+  }
+
+  #submit3-btn {
+    background: -webkit-linear-gradient(right, #a6f77b, #2dbd6e);
+    border: none;
+    border-radius: 21px;
+    box-shadow: 0px 1px 8px #24c64f;
+    cursor: pointer;
+    color: white;
+   
+   
+
+
+    transition: 0.25s;
+    
+ 
+  }
+
+  #submit3-btn:hover {
+    box-shadow: 0px 1px 18px #24c64f;
+  }
+
+  .form2 {
+    width: 100%;
+    display: flex;
+    flex-direction: row; /* Para mostrar los botones uno al lado del otro */
+    gap: 30px;
+   justify-content: center;
+   align-items: center;
+    
+
+    
+  }
+
+  .form2-group {
+    display: flex;
+    align-items: center;
+  }
+
+  h2  {
+    color: black;
+  }
+
+  button{
+    height: 75px;
+    width: 200px;
+    font-weight: 400;
+    font-family: "Poppins", sans-serif;
+    font-size: 20px;
+
+ 
+
+  }
