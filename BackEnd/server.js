@@ -32,6 +32,24 @@ const server = http.createServer(async (req, res) => {
     const method = req.method;
     const db = getDB();
 
+
+    // **Agregar encabezados para CORS**
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Permitir todas las solicitudes
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Métodos permitidos
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Encabezados permitidos
+
+    // Manejar solicitudes preflight (opcional)
+    if (method === 'OPTIONS') {
+    res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    res.end();
+    return; // Salir después de manejar el preflight
+}
+
+
     // Nueva lista de palabras prohibidas
 const palabrasProhibidas = [
         'tonto', 'idiota', 'imbécil', 'estúpido', 'grosero', 'malnacido', 'infeliz',
@@ -124,11 +142,19 @@ const palabrasProhibidas = [
 
         // RUTA: Obtener todos los emprendimientos
         else if (path === '/emprendimientos' && method === 'GET') {
+            console.log("Solicitud recibida: GET /emprendimientos");
             const emprendimientosCollection = db.collection('emprendimientos');
             const emprendimientos = await emprendimientosCollection.find().toArray();
 
+            const emprendimientosUnicos = Array.from(
+                new Map(emprendimientos.map(emp => [emp.nombreEmprendimiento, emp])).values()
+            );
+
+
+            console.log("Emprendimientos enviados:", emprendimientos);
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(emprendimientos));
+            res.end(JSON.stringify(emprendimientosUnicos));
         }
 
         // RUTA: Obtener productos de un emprendimiento específico

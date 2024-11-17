@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitante</title>
+    <link rel="stylesheet" href="../css/SRegistrarCliente.css">
+    <link rel="stylesheet" href="../../Navbar/css/navbar.css">
+    <style>
+        /* Estilos para la Navbar */
+        .navbar {
+            background-color: #4527a0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        /* Contenedor del logo y el título */
+        .navbar-left {
+            display: flex;
+            align-items: center; /* Centra verticalmente */
+            gap: 10px; /* Espacio entre el logo y el título */
+        }
+
+        /* Logo */
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        /* Título */
+        .title {
+            font-size: 1.5em; /* Ajustar tamaño del título */
+            color: white;
+            font-style: oblique;
+            margin: 0; /* Elimina márgenes predeterminados */
+        }
+
+        /* Botón de registro */
+        .register-btn {
+            background-color: #ff6347; /* Rojo tomate */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .register-btn:hover {
+            background-color: #e5533c;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar con imagen, título y botón -->
+    <nav class="navbar">
+        <!-- Contenedor del logo y el título -->
+        <div class="navbar-left">
+            <img class="logo" src="/SED-MUSHAFIRA-TEAM/src/images/logo.png" alt="Logo">
+            <h3 class="title">El Paseo Conecta</h3>
+        </div>
+        <!-- Botón de registro -->
+        <button class="register-btn" onclick="window.location.href='../../Register/InicioRegister/html/InicioRegister.html'">Register</button>
+    </nav>
+
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div id="sidebarContainer" class="sidebar"></div>
+
+        <!-- Contenido principal -->
+        <main class="content">
+            <!-- Barra de búsqueda -->
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar..." id="searchInput">
+            </div>
+
+            <!-- Grid de tarjetas -->
+            <div class="card-grid" id="cardGrid"></div>
+        </main>
+    </div>
+
+    <script src="../js/SRegistrarCliente.js"></script>
+    <script>
+        // Cargar tarjetas
+        loadCards();
+    </script>
+</body>
+</html>
