@@ -10,9 +10,9 @@ const crypto = require('crypto');
 const formidable = require('formidable');
 const { subirImagen, obtenerImagen } = require('./src/routes/images.router.js'); // Asegúrate de importar bien
 const fs = require('fs');
-const path = require('path');
+const fsPath  = require('path');
 
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const UPLOADS_DIR = fsPath .join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR);
 }
@@ -111,10 +111,10 @@ const server = http.createServer(async (req, res) => {
 
             const file = files.fotoPerfil;
             res.writeHead(201, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Imagen subida con éxito', ruta: `/uploads/${path.basename(file.filepath)}` }));
+            res.end(JSON.stringify({ message: 'Imagen subida con éxito', ruta: `/uploads/${fsPath.basename(file.filepath)}` }));
         }
         else if (path.startsWith('/uploads/') && method === 'GET') {
-            const filePath = path.join(UPLOADS_DIR, path.basename(path));
+            const filePath = fsPath.join(UPLOADS_DIR, fsPath.basename(path));
 
             if (!fs.existsSync(filePath)) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -165,7 +165,7 @@ const server = http.createServer(async (req, res) => {
 
                 // Verificar si el archivo tiene una ruta válida
                 if (file.filepath) {
-                    const uploadDir = path.join(__dirname, 'uploads');
+                    const uploadDir = fsPath.join(__dirname, 'uploads');
 
                     // Crear la carpeta si no existe
                     if (!fs.existsSync(uploadDir)) {
@@ -174,7 +174,7 @@ const server = http.createServer(async (req, res) => {
 
                     // Generar un nombre único para el archivo
                     const fileName = `${Date.now()}-${file.originalFilename}`;
-                    const filePath = path.join(uploadDir, fileName);
+                    const filePath = fsPath.join(uploadDir, fileName);
 
                     // Mover el archivo desde la ubicación temporal a la carpeta final
                     fs.renameSync(file.filepath, filePath);
@@ -263,12 +263,13 @@ const server = http.createServer(async (req, res) => {
 
 
             let imagenEmprendimiento = null;
-            if (files && files.imagenEmprendimiento) {
-                const file = files.imagenEmprendimiento;
-
+            console.log(files);
+            if (files && files.imagenEmprendimiento && files.imagenEmprendimiento.length > 0) {
+                //const file = files.imagenEmprendimiento;
+                const file = files.imagenEmprendimiento[0]; // Access the first file if it's an array
                 // Verificar si el archivo tiene una ruta válida
                 if (file.filepath) {
-                    const uploadDir = path.join(__dirname, 'uploads');
+                    const uploadDir = fsPath .join(__dirname, 'uploads');
 
                     // Crear la carpeta si no existe
                     if (!fs.existsSync(uploadDir)) {
@@ -277,12 +278,12 @@ const server = http.createServer(async (req, res) => {
 
                     // Generar un nombre único para el archivo
                     const fileName = `${Date.now()}-${file.originalFilename}`;
-                    const filePath = path.join(uploadDir, fileName);
+                    const filePath = fsPath.join(uploadDir, fileName);
 
                     // Mover el archivo desde la ubicación temporal a la carpeta final
                     fs.renameSync(file.filepath, filePath);
 
-                    fotoPerfil = `/uploads/${fileName}`; // Ruta relativa de la imagen
+                    imagenEmprendimiento = `/uploads/${fileName}`; // Ruta relativa de la imagen
                 } else {
                     console.error('El archivo no tiene una ruta válida.');
                 }
