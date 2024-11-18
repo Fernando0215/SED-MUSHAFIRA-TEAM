@@ -225,16 +225,87 @@ const server = http.createServer(async (req, res) => {
         }
 
         // RUTA: Crear emprendimiento
-        else if (path === '/emprendimientos' && method === 'POST') {
-            const newEmprendimiento = await parseRequestBody(req);
+        else if (path === '/emprendimientos/register' && method === 'POST') {
+            const { fields, files } = await parseRequestBody(req);
+            const { nombreEmprendimiento, infoContacto, correo, direccion, password, confirmpassword,  descripcion } = fields;
 
-            await validarEmprendimiento(newEmprendimiento);
+
+            if (password !== confirmpassword) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Las contraseñas no coinciden' }));
+                return;
+            }
+
+
+
+            delete fields.confirmpassword;
+            await validarEmprendimiento(fields);
+
 
             const emprendimientosCollection = db.collection('emprendimientos');
-            await emprendimientosCollection.insertOne(newEmprendimiento);
+           
+            const emprendimientoExistente = await emprendimientosCollection.findOne({
+                $or: [
+                    { correo },
+                ]
+            });
+            if (emprendimientoExistente) {
+                res.writeHead(409, { 'Content-Type': 'application/json' });
+                res.end(
+                    JSON.stringify({
+                        error: emprendimientoExistente.correo === correo
+                            ? 'El correo ya está registrado. Intente con otro correo.'
+                            : ''
+                    })
+                );
+                return;
+            }
 
+
+            let imagenEmprendimiento = null;
+            if (files && files.imagenEmprendimiento) {
+                const file = files.imagenEmprendimiento;
+
+                // Verificar si el archivo tiene una ruta válida
+                if (file.filepath) {
+                    const uploadDir = path.join(__dirname, 'uploads');
+
+                    // Crear la carpeta si no existe
+                    if (!fs.existsSync(uploadDir)) {
+                        fs.mkdirSync(uploadDir);
+                    }
+
+                    // Generar un nombre único para el archivo
+                    const fileName = `${Date.now()}-${file.originalFilename}`;
+                    const filePath = path.join(uploadDir, fileName);
+
+                    // Mover el archivo desde la ubicación temporal a la carpeta final
+                    fs.renameSync(file.filepath, filePath);
+
+                    fotoPerfil = `/uploads/${fileName}`; // Ruta relativa de la imagen
+                } else {
+                    console.error('El archivo no tiene una ruta válida.');
+                }
+            }
+
+            const hashPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+            const emprendimiento = {
+                nombreEmprendimiento,
+                infoContacto,
+                correo,
+                imagenEmprendimiento,
+                direccion,
+                password: hashPassword,
+                descripcion
+
+            };   
+            
+            const resultado = await emprendimientosCollection.insertOne(emprendimiento);
             res.writeHead(201, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Emprendimiento creado exitosamente' }));
+            res.end(JSON.stringify({ message: 'Cliente registrado exitosamente', clienteId: resultado.insertedId }));
+           
+           
         }
 
         // RUTA: Obtener perfil del emprendimiento autenticado

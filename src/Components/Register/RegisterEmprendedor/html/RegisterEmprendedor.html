@@ -23,27 +23,28 @@
                 <h1 class='h2-1'> Registrarse</h1>
                 <h3 class='h3'>Inicia la aventura de emprender, promocionar y dar a conocer tu negocio</h3>
             </div>
-            <form method="post" class="form1" action="/register">
+            <form method="post" class="form1" action="../../../Login/LoginEmp/html/LoginEmprendedor.html">
                 
-                <input id="nombreCompleto" name="nombre" class="form1-content" type="text" required  placeholder="Nombre Completo" />
+                <input id="nombreCompleto" name="nombreEmprendimiento" class="form1-content" type="text" required  placeholder="Nombre Completo" />
 
               
-                <input id="contacto" name="contacto" class="form1-content" type="tel" required placeholder="Contacto"/>
+                <input id="contacto" name="infoContacto" class="form1-content" type="tel" required placeholder="Contacto"/>
 
+                <input id="email" name="correo" class="form1-content" type="email" required placeholder="Email" />
+
+                <input id="fotoEmp" name="imagenEmprendimiento" class="form1-content" type="file" accept="image/*" required />
                 
                 <input id="direccion" name="direccion" class="form1-content" type="text" required placeholder="Dirección"/>
 
                 
-                <input id="user1-password" name="contrasenna" class="form1-content" type="password" required placeholder="Contraseña" />
+                <input id="user1-password" name="password" class="form1-content" type="password" required placeholder="Contraseña" />
 
                 
-                <input id="user2-password" name="confirmcontrasenna" class="form1-content" type="password" required placeholder="Confirma tu contraseña" />
+                <input id="user2-password" name="confirmpassword" class="form1-content" type="password" required placeholder="Confirma tu contraseña" />
 
                 
-                <input id="nombreNegocio" name="negocio" class="form1-content" type="text" required placeholder="Nombre de tu negocio" />
+                <textarea id="descripcionNegocio" name="descripcion" class="form1-content" type="text" placeholder="Escribe aquí la descripción del negocio..." rows="1"></textarea>
 
-                
-                <textarea id="descripcionNegocio" name="descripción" class="form1-content" type="text" placeholder="Escribe aquí la descripción del negocio..." rows="1"></textarea>
 
 
                 <input id="submit-boton" type="submit" name="submit" value="Register" />

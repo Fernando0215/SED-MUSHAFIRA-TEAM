@@ -32,40 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Get form data
         const formData = new FormData(form);
-        const data = {
-            nombre: formData.get('nombre'),
-            apellido: formData.get('contacto'),
-            imagenCliente: formData.get('direccion'),
-            infoContacto: formData.get('contrasenna'),
-            correoElectronico: formData.get('confirmcontrasenna'),
-            contrasenna: formData.get('negocio'),
-            confirmcontrasenna: formData.get('descripcion')
-        };
-
       
-
-
-        // Form validation
-        const validationErrors = validateForm(data);
-
-        console.log(validationErrors);
-
-        if (validationErrors.length > 0) {
-            console.log("Errors found, showing error messages"); // Debug log
-            errorMessagesContainer.style.display = 'block'; // Mostrar el contenedor
-            showErrorMessages(validationErrors);
-            return ; // Stop the function if there are errors
-        }
-
 
         // Sending data to the server using fetch (POST request)
         try {
-            const response = await fetch('/register', {
+            const response = await fetch('http://localhost:3000/emprendimientos/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+                body: formData
             });
 
             if (!response.ok) {
@@ -74,11 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Show confirmation message
-            alert('Usuario creado con éxito');
-            form.reset(); // Reset form fields
+            alert('Solicitud enviada con éxito');
+           // form.reset(); // Reset form fields
 
             // Optionally, redirect to login page after success
-            window.location.href = '/login';
+            window.location.href = '../../../Login/LoginEmp/html/LoginEmprendedor.html';
         } catch (error) {
             showErrorMessages([error.message]);
         }
@@ -89,21 +62,30 @@ document.addEventListener("DOMContentLoaded", () => {
         const errors = [];
 
         // Check if passwords match
-        if (data.contrasenna != data.confirmcontrasenna) {
+        if (formData.get('password') != formData.get('confirmpassword')) {
             errors.push('Las contraseñas no coinciden');
         }
 
         // Check if email is valid
-        if (!validateEmail(data.correoElectronico)) {
+        if (!validateEmail(formData.get('correoElectronico'))) {
             errors.push('Por favor ingrese un correo electrónico válido');
         }
 
-        // Check for empty fields
-        Object.keys(data).forEach((key) => {
-            if (!data[key]) {
+
+
+        // Verificar campos vacíos
+        ['nombreEmprendimiento', 'infoContacto', 'correo', 'imagenEmprendimiento', 'direccion', 'password', 'confirmpassword', 'descripcion' ].forEach((key) => {
+            if (!formData.get(key)) {
                 errors.push(`${key.charAt(0).toUpperCase() + key.slice(1)} es obligatorio`);
             }
         });
+
+
+         // Validar imagen
+         const fotoPerfil = formData.get('imagenEmprendimiento');
+         if (fotoPerfil && !['image/png', 'image/jpeg'].includes(fotoPerfil.type)) {
+             errors.push('La imagen debe ser PNG o JPEG');
+         }
 
         return errors;
     };
