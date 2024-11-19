@@ -35,18 +35,22 @@ async function parseRequestBody(req) {
                 }
             });
         } else if (contentType.startsWith('multipart/form-data')) {
-            const form = new formidable.IncomingForm({ multiples: true });
+            const form = new formidable.IncomingForm({
+                multiples: true,           // Permitir múltiples archivos
+                uploadDir: UPLOADS_DIR,    // Carpeta donde se guardarán los archivos
+                keepExtensions: true       // Mantener la extensión original de los archivos
+            });
+
             form.parse(req, (err, fields, files) => {
                 if (err) {
-                    return reject(err);
+                    reject(err);
+                } else {
+                    // Normalizar los campos y resolver
+                    const normalizedFields = Object.fromEntries(
+                        Object.entries(fields).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])
+                    );
+                    resolve({ fields: normalizedFields, files });
                 }
-
-                // Convertir los valores de los campos a strings simples
-                const normalizedFields = Object.fromEntries(
-                    Object.entries(fields).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])
-                );
-
-                resolve({ fields: normalizedFields, files });
             });
         } else {
             reject(new Error('Unsupported content type'));
@@ -96,34 +100,40 @@ const server = http.createServer(async (req, res) => {
     try {
         // RUTA: Subir imagen
         if (path === '/upload' && method === 'POST') {
-
-            // RUTA: Obtener imagenconst { files } = await parseRequestBody(req);
-
+            const { files } = await parseRequestBody(req);
+        
             if (!files || !files.fotoPerfil) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'No se subió ninguna imagen' }));
                 return;
             }
-
+        
             const file = files.fotoPerfil;
+            const fileExtension = fsPath.extname(file.originalFilename); // Obtener la extensión
+            const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
+            const filePath = fsPath.join(UPLOADS_DIR, fileName);
+        
+            // Mover el archivo a la carpeta final
+            fs.renameSync(file.filepath, filePath);
+        
             res.writeHead(201, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Imagen subida con éxito', ruta: `/uploads/${fsPath.basename(file.filepath)}` }));
+            res.end(JSON.stringify({ ruta: `/uploads/${fileName}` }));
         }
         else if (path.startsWith('/uploads/') && method === 'GET') {
-            const fileName = fsPath.basename(path);
-            const filePath = fsPath.join(UPLOADS_DIR, fileName);
-
+            const filePath = fsPath.join(__dirname, path);
+        
             if (!fs.existsSync(filePath)) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'Imagen no encontrada' }));
                 return;
             }
-
-            const mimeType = 'image/jpeg'; // Cambia si necesitas otros formatos
+        
+            const mimeType = 'image/jpeg'; // Cambiar según el tipo de archivo
             res.writeHead(200, { 'Content-Type': mimeType });
             const readStream = fs.createReadStream(filePath);
             readStream.pipe(res);
         }
+        
         // RUTA: Crear cliente
         else if (path === '/clientes/register' && method === 'POST') {
             const { fields, files } = await parseRequestBody(req);
@@ -294,6 +304,7 @@ const server = http.createServer(async (req, res) => {
                 infoContacto,
                 correo,
                 imagenEmprendimiento,
+                bannerImage,
                 direccion,
                 password: hashPassword,
                 descripcion
@@ -324,6 +335,60 @@ const server = http.createServer(async (req, res) => {
             });
         }
 
+        else if (path.startsWith('/emprendimientos/') && method === 'GET') {
+            const parts = path.split('/');
+            const emprendimientoId = parts[2];
+        
+            if (!ObjectId.isValid(emprendimientoId)) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'ID del emprendimiento no es válido' }));
+                return;
+            }
+        
+            const emprendimientosCollection = db.collection('emprendimientos');
+            const emprendimiento = await emprendimientosCollection.findOne({ _id: new ObjectId(emprendimientoId) });
+        
+            if (!emprendimiento) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
+                return;
+            }
+        
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(emprendimiento));
+        }
+
+        else if (path === '/emprendimientos/banner' && method === 'POST') {
+            await verificarToken(req, res, async () => {
+                const { fields, files } = await parseRequestBody(req);
+        
+                if (!files || !files.bannerImage) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'No se subió ninguna imagen de banner' }));
+                    return;
+                }
+        
+                const file = files.bannerImage;
+                const fileExtension = fsPath.extname(file.originalFilename); // Obtener la extensión
+                const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
+                const filePath = fsPath.join(UPLOADS_DIR, fileName);
+        
+                // Mover el archivo
+                fs.renameSync(file.filepath, filePath);
+        
+                // Actualizar el banner en la base de datos
+                const bannerPath = `/uploads/${fileName}`;
+                const emprendimientosCollection = db.collection('emprendimientos');
+                await emprendimientosCollection.updateOne(
+                    { _id: new ObjectId(req.usuario.id) },
+                    { $set: { bannerImage: bannerPath } }
+                );
+        
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Banner actualizado exitosamente', bannerImage: bannerPath }));
+            });
+        }
+
         // RUTA: Obtener todos los emprendimientos
         else if (path === '/emprendimientos' && method === 'GET') {
             const emprendimientosCollection = db.collection('emprendimientos');
@@ -349,13 +414,20 @@ const server = http.createServer(async (req, res) => {
         else if (path.startsWith('/emprendimientos/') && path.endsWith('/productos') && method === 'GET') {
             const parts = path.split('/');
             const emprendimientoId = parts[2];
-
+        
+            if (!ObjectId.isValid(emprendimientoId)) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'ID del emprendimiento no es válido' }));
+                return;
+            }
+        
             const productosCollection = db.collection('productos');
             const productos = await productosCollection.find({ emprendimientoId }).toArray();
-
+        
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(productos));
         }
+        
 
         // Ruta: Obtener productos de un emprendimiento autenticado
         else if (path === '/productos' && method === 'GET') {
@@ -397,23 +469,44 @@ const server = http.createServer(async (req, res) => {
         // RUTA: Crear producto
         else if (path === '/productos' && method === 'POST') {
             await verificarToken(req, res, async () => {
-                const newProducto = await parseRequestBody(req);
-
-                if (!newProducto.nombre || !newProducto.descripcion || !newProducto.precio) {
+                const { fields, files } = await parseRequestBody(req);
+        
+                // Verificar campos requeridos
+                const { nombre, descripcion, precio } = fields;
+                if (!nombre || !descripcion || !precio || !files || !files.imagenProducto) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Faltan campos requeridos' }));
+                    res.end(JSON.stringify({ error: 'Faltan campos requeridos o archivo de imagen' }));
                     return;
                 }
-
-                newProducto.emprendimientoId = req.usuario.id; // Asociar el producto al emprendimiento autenticado
+        
+                // Procesar la imagen del producto
+                const file = files.imagenProducto;
+                const fileExtension = fsPath.extname(file.originalFilename); // Obtener la extensión
+                const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
+                const filePath = fsPath.join(UPLOADS_DIR, fileName);
+        
+                // Mover el archivo
+                fs.renameSync(file.filepath, filePath);
+        
+                // Crear objeto del producto
+                const nuevoProducto = {
+                    nombre,
+                    descripcion,
+                    precio: parseFloat(precio),
+                    imagenProducto: `/uploads/${fileName}`,
+                    emprendimientoId: req.usuario.id, // Asignar al emprendimiento autenticado
+                };
+        
                 const productosCollection = db.collection('productos');
-                await productosCollection.insertOne(newProducto);
-
+                const resultado = await productosCollection.insertOne(nuevoProducto);
+        
                 res.writeHead(201, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Producto creado exitosamente' }));
+                res.end(JSON.stringify({
+                    message: 'Producto creado exitosamente',
+                    producto: { id: resultado.insertedId, ...nuevoProducto },
+                }));
             });
         }
-
 
         // RUTA: Crear comentario en un emprendimiento
         // RUTA: Crear comentario en un emprendimiento

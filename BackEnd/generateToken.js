@@ -5,9 +5,9 @@ const secretKey = process.env.JWT_SECRET || 'mi_secreto_super_seguro'; // Cambia
 
 // Información del emprendimiento
 const payload = {
-    id: "6738d13a9f6ef916a96bd5e4",
-	nombre: "Fer",
-	infoContacto: "77895379", // Correo del emprendimiento
+    id: "673bc0da14756a6865c17cea",
+	nombre: "zapatitos bonitos",
+	infoContacto: "7890483934", // Correo del emprendimiento
 };
 
 // Configuración del token

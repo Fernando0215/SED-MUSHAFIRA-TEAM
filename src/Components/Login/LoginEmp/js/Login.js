@@ -1,38 +1,33 @@
-// Select the form and add an event listener for form submission
 const form = document.getElementById("login-form");
 const errorMessagesContainer = document.createElement('div');
 errorMessagesContainer.classList.add('error-messages');
-form.prepend(errorMessagesContainer); // Add the error message container to the form
+form.prepend(errorMessagesContainer);
 
 const showErrorMessages = (messages) => {
-    errorMessagesContainer.innerHTML = ''; // Clear previous messages
+    errorMessagesContainer.innerHTML = '';
     messages.forEach((message) => {
         const errorElement = document.createElement('p');
-        errorElement.textContent = '⚠️ ' + message; // Add icon before the message
+        errorElement.textContent = '⚠️ ' + message;
         errorMessagesContainer.appendChild(errorElement);
     });
 };
 
-form.addEventListener("submit", async  (event)  => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const username = document.getElementById("user-name").value;
-    const password = document.getElementById("user-password").value;
+    const correoElectronico = document.getElementById("user-name").value;
+    const contrasenna = document.getElementById("user-password").value;
     const errorMessages = [];
 
-    // Validate that inputs are not empty
-    if (!username) {
-        errorMessages.push("User cannot be empty.");
+    if (!correoElectronico) {
+        errorMessages.push("El correo no puede estar vacío.");
     }
-    if (!password) {
-        errorMessages.push("Password cannot be empty.");
+    if (!contrasenna) {
+        errorMessages.push("La contraseña no puede estar vacía.");
     }
 
-    // Show error messages if any are present and stop the submission
     if (errorMessages.length > 0) {
-        errorMessagesContainer.style.display = 'block'; // Mostrar el contenedor
         showErrorMessages(errorMessages);
-        console.log(errorMessages);
         return;
     }
 
@@ -42,26 +37,19 @@ form.addEventListener("submit", async  (event)  => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ correoElectronico, contrasenna })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.success) {
-            if (data.userType === 'cliente') {
-                window.location.href = "/loggedin";
-            } else if (data.userType === 'emprendedor') {
-                window.location.href = "/loggedin";
-            }
+        if (response.ok) {
+            // Redirigir al usuario dependiendo del rol
+            window.location.href = data.redirectUrl;
         } else {
-            showErrorMessages([data.message || "Invalid email or password. Please try again."]);
+            showErrorMessages([data.error || "Correo o contraseña inválidos."]);
         }
     } catch (error) {
-        console.error("Error during login:", error);
-        showErrorMessages(["An error occurred. Please try again later."]);
+        console.error("Error durante el inicio de sesión:", error);
+        showErrorMessages(["Ocurrió un error. Por favor, inténtalo de nuevo."]);
     }
 });
-
-function closeView() {
-    window.location.href = 'HomeClient.html';  // Or your desired redirect URL
-}
