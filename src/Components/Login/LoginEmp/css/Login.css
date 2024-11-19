@@ -169,7 +169,7 @@ img{
 
 }
 
-#user-name{
+#user-correo{
   padding-top: 0px;
   padding-left: 50px; 
   border-left: 10px;
@@ -195,7 +195,7 @@ img{
 
 
 
-#user-name::placeholder{
+#user-correo::placeholder{
   color: black;
   font-family: "Poppins", sans-serif;
   padding: 10px;

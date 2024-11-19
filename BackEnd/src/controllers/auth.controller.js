@@ -1,11 +1,9 @@
 const { connectDB } = require('../config/db.config'); // Conexión a la base de datos
-const bcrypt = require('bcrypt'); // Para el hashing de contraseñas
 const jwt = require('jsonwebtoken'); // Para generar tokens JWT
-const { JWT_SECRET } = require('../config/env.config'); // Llave secreta para el JWT
-
+require('dotenv').config();
 // Función de login
 async function login(req, res) {
-  const { correoElectronico, contrasenna } = req.body;
+  const { correo, contrasenna } = req.body;
 
   if (!correoElectronico || !contrasenna) {
     return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
@@ -15,14 +13,14 @@ async function login(req, res) {
 
   try {
     // Buscar cliente
-    const cliente = await db.collection('clientes').findOne({ correo: correoElectronico });
+    const cliente = await db.collection('clientes').findOne({ correoElectronico: correo });
     if (cliente && await bcrypt.compare(contrasenna, cliente.contrasenna)) {
       const token = jwt.sign({ id: cliente._id, role: 'cliente' }, JWT_SECRET, { expiresIn: '1h' });
       return res.json({ message: 'Cliente autenticado', token, role: 'cliente' });
     }
 
     // Buscar emprendimiento
-    const emprendimiento = await db.collection('emprendimientos').findOne({ correo: correoElectronico });
+    const emprendimiento = await db.collection('emprendimientos').findOne({ correo: correo });
     if (emprendimiento && await bcrypt.compare(contrasenna, emprendimiento.password)) {
       const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, JWT_SECRET, { expiresIn: '1h' });
       return res.json({ message: 'Emprendedor autenticado', token, role: 'emprendedor' });
