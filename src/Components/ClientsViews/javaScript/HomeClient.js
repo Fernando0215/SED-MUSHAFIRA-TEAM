@@ -1,22 +1,46 @@
-fetchClientePerfil();
-
-
-function loadEmprendimientos() {
+async function loadEmprendimientos() {
     const emprendimientosContainer = document.getElementById("emprendimientosContainer");
     const searchInput = document.getElementById("searchInput");
 
+    // Fetch the client profile data from the server
+    async function fetchClientProfile() {
+        try {
+            const token = localStorage.getItem("authToken"); // Adjust this based on where you store the token
+            if (!token) {
+                throw new Error("Authorization token not found");
+            }
+
+            const response = await fetch('http://localhost:3000/clientes/perfil', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Error fetching client profile:", errorData);
+                return;
+            }
+
+            const cliente = await response.json();
+            console.log("Client Profile:", cliente);
+            // You could display client info here if needed, e.g., name in the UI.
+        } catch (error) {
+            console.error("Failed to load client profile:", error.message);
+        }
+    }
+
+    // Sample emprendimientos array
     const emprendimientos = [
         { id: 1, nombre: "El corral", descripcion: "Lorem ipsum dolor sit amet", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
         { id: 2, nombre: "Coffee Place", descripcion: "Aliquam pretium sit odio non", imagen: "/SED-MUSHAFIRA-TEAM/src/images/lessIcon.png" },
         { id: 3, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
-        { id: 4, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
-        { id: 5, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
-        { id: 6, nombre: "Food Express", descripcion: "Ullamcorper amet dolor donec", imagen: "/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" },
-
     ];
 
     function displayEmprendimientos(filteredEmprendimientos) {
-        emprendimientosContainer.innerHTML = ""; // Limpiar contenedor
+        emprendimientosContainer.innerHTML = ""; // Clear the container
 
         filteredEmprendimientos.forEach(emp => {
             const card = document.createElement("div");
@@ -35,10 +59,10 @@ function loadEmprendimientos() {
         });
     }
 
-    // Mostrar todos los emprendimientos al cargar la página
+    // Display all emprendimientos initially
     displayEmprendimientos(emprendimientos);
 
-    // Evento para filtrar cuando el usuario escribe en la barra de búsqueda
+    // Event to filter emprendimientos based on search input
     searchInput.addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase();
         const filteredEmprendimientos = emprendimientos.filter(emp =>
@@ -46,51 +70,10 @@ function loadEmprendimientos() {
         );
         displayEmprendimientos(filteredEmprendimientos);
     });
+
+    // Fetch the client profile data when the page loads
+    await fetchClientProfile();
 }
 
-async function fetchClientePerfil() {
-    // Get the JWT token from localStorage
-    const token = localStorage.getItem('jwtToken'); // Or sessionStorage or any other secure place
-
-    if (!token) {
-        console.error('No token found');
-        return;
-    }
-
-    try {
-        // Make the GET request to the /clientes/perfil route
-        const response = await fetch('http://localhost:3000/clientes/perfil', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Add the token to the Authorization header
-            }
-        });
-
-        // Check if the response is OK (status code 200)
-        if (!response.ok) {
-            if (response.status === 401) {
-                console.error('Unauthorized - Please login again');
-                // Handle the case where the token is invalid or expired
-                return;
-            }
-            throw new Error('Failed to fetch cliente perfil');
-        }
-
-        // Parse the JSON response
-        const clienteData = await response.json();
-
-        // Display the cliente profile data (you can update the UI with the data)
-        console.log('Cliente data:', clienteData);
-
-        // Example of how you might display it on the page
-        document.getElementById('clienteName').innerText = clienteData.nombre;
-        document.getElementById('clienteEmail').innerText = clienteData.email;
-        // Continue to display other profile data as needed
-
-    } catch (error) {
-        console.error('Error fetching cliente perfil:', error);
-    }
-}
-
-// Call the fetchClientePerfil function to load the profile
+// Call loadEmprendimientos on page load
+document.addEventListener("DOMContentLoaded", loadEmprendimientos);

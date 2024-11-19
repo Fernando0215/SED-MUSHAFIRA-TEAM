@@ -55,11 +55,12 @@ form.addEventListener("submit", async  (event)  => {
         const data = await response.json();
 
         if (response.ok) {
-            sessionStorage.setItem('authToken', data.token);
+            localStorage.setItem('authToken', data.token);
             if (data.role === 'cliente') {
-                window.location.href = 'http://localhost:3000/clientes/perfil';
+                window.location.href = "/src/Components/ClientsViews/html/HomeClient.html";
+
             } else if (data.role === 'emprendedor') {
-                window.location.href = 'http://localhost:3000/emprendimientos/perfil';
+                window.location.href = '/src/Components/EmprendedorViews/html/emprendedormenu.html';
             }
         } else {
             const errorMsg = data.message || "Invalid email or password. Please try again.";
