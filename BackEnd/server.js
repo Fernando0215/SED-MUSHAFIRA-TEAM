@@ -75,11 +75,7 @@ const server = http.createServer(async (req, res) => {
 
     // Manejar solicitudes preflight (opcional)
     if (method === 'OPTIONS') {
-        res.writeHead(204, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-        });
+        res.writeHead(204);
         res.end();
         return; // Salir después de manejar el preflight
     }
@@ -119,7 +115,8 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ message: 'Imagen subida con éxito', ruta: `/uploads/${fsPath.basename(file.filepath)}` }));
         }
         else if (path.startsWith('/uploads/') && method === 'GET') {
-            const filePath = fsPath.join(UPLOADS_DIR, fsPath.basename(path));
+            const fileName = fsPath.basename(path);
+            const filePath = fsPath.join(UPLOADS_DIR, fileName);
 
             if (!fs.existsSync(filePath)) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -127,9 +124,10 @@ const server = http.createServer(async (req, res) => {
                 return;
             }
 
-            const fileStream = fs.createReadStream(filePath);
-            res.writeHead(200, { 'Content-Type': 'image/jpeg' });
-            fileStream.pipe(res);
+            const mimeType = 'image/jpeg'; // Cambia si necesitas otros formatos
+            res.writeHead(200, { 'Content-Type': mimeType });
+            const readStream = fs.createReadStream(filePath);
+            readStream.pipe(res);
         }
         // RUTA: Crear cliente
         else if (path === '/clientes/register' && method === 'POST') {
@@ -232,6 +230,7 @@ const server = http.createServer(async (req, res) => {
         // RUTA: Crear emprendimiento
         else if (path === '/emprendimientos/register' && method === 'POST') {
             const { fields, files } = await parseRequestBody(req);
+            console.log(req.fields);
             const { nombreEmprendimiento, infoContacto, correo, direccion, password, confirmpassword,  descripcion } = fields;
 
 
@@ -379,21 +378,25 @@ const server = http.createServer(async (req, res) => {
 
         // RUTA: Obtener todos los emprendimientos
         else if (path === '/emprendimientos' && method === 'GET') {
-            console.log("Solicitud recibida: GET /emprendimientos");
             const emprendimientosCollection = db.collection('emprendimientos');
             const emprendimientos = await emprendimientosCollection.find().toArray();
-
+        
+            // Eliminar duplicados basados en el nombre del emprendimiento
             const emprendimientosUnicos = Array.from(
                 new Map(emprendimientos.map(emp => [emp.nombreEmprendimiento, emp])).values()
             );
-
-
-            console.log("Emprendimientos enviados:", emprendimientos);
-
+        
+            // Verificar que la imagen sea válida; usar una imagen predeterminada si no existe
+            emprendimientosUnicos.forEach(emp => {
+                if (!emp.imagenEmprendimiento || !fs.existsSync(`./uploads/${emp.imagenEmprendimiento}`)) {
+                    emp.imagenEmprendimiento = '/uploads/defaultImage.png';
+                }
+            });
+        
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(emprendimientosUnicos));
         }
-
+        
         // RUTA: Obtener productos de un emprendimiento específico
         else if (path.startsWith('/emprendimientos/') && path.endsWith('/productos') && method === 'GET') {
             const parts = path.split('/');
