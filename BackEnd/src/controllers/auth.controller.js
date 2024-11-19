@@ -1,15 +1,11 @@
 require('dotenv').config(); // Cargar variables de entorno desde .env
 const { connectDB } = require('../config/db.config'); // Conexión a la base de datos
-const bcrypt = require('bcrypt'); // Para el hashing de contraseñas
 const jwt = require('jsonwebtoken'); // Para generar tokens JWT
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mi_secreto_super_seguro'; // Llave secreta para JWT
 
-// Función de login
 async function login(req, res) {
-    try {
-        const body = await parseRequestBody(req); // Parsear el cuerpo de la solicitud
-        const { correoElectronico, contrasenna } = body;
+  const { correo, contrasenna } = req.body;
 
         if (!correoElectronico || !contrasenna) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -19,43 +15,28 @@ async function login(req, res) {
 
         const db = await connectDB();
 
-        // Buscar cliente
-        const cliente = await db.collection('clientes').findOne({ correoElectronico });
-        if (cliente && await bcrypt.compare(contrasenna, cliente.contrasenna)) {
-            const token = jwt.sign({ id: cliente._id, role: 'cliente' }, JWT_SECRET, { expiresIn: '1h' });
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({
-                message: 'Cliente autenticado',
-                token,
-                role: 'cliente',
-                redirectUrl: '/home-client' // URL para cliente
-            }));
-            return;
-        }
-
-        // Buscar emprendimiento
-        const emprendimiento = await db.collection('emprendimientos').findOne({ correo: correoElectronico });
-        if (emprendimiento && await bcrypt.compare(contrasenna, emprendimiento.password)) {
-            const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, JWT_SECRET, { expiresIn: '1h' });
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({
-                message: 'Emprendedor autenticado',
-                token,
-                role: 'emprendedor',
-                redirectUrl: '/home-emprendedor' // URL para emprendedor
-            }));
-            return;
-        }
-
-        // Si no se encuentra en ninguna colección
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Usuario no encontrado. Por favor regístrate.' }));
-    } catch (error) {
-        console.error('Error en autenticación:', error);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Error interno en el servidor' }));
+  try {
+    // Buscar cliente
+    const cliente = await db.collection('clientes').findOne({ correoElectronico: correo });
+    if (cliente && await bcrypt.compare(contrasenna, cliente.contrasenna)) {
+      const token = jwt.sign({ id: cliente._id, role: 'cliente' }, JWT_SECRET, { expiresIn: '1h' });
+      return res.json({ message: 'Cliente autenticado', token, role: 'cliente' });
     }
+
+    // Buscar emprendimiento
+    const emprendimiento = await db.collection('emprendimientos').findOne({ correo: correo });
+    if (emprendimiento && await bcrypt.compare(contrasenna, emprendimiento.password)) {
+      const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, JWT_SECRET, { expiresIn: '1h' });
+      return res.json({ message: 'Emprendedor autenticado', token, role: 'emprendedor' });
+    }
+
+    return res.status(404).json({ error: 'Usuario no encontrado. Por favor regístrate.' });
+  } catch (error) {
+    console.error('Error en autenticación:', error);
+    return res.status(500).json({ error: 'Error interno en el servidor' });
+  }
 }
+    
 
 // Función de registro
 async function register(req, res) {

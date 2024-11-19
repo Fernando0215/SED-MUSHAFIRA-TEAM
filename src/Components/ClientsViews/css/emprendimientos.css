@@ -51,10 +51,13 @@ body {
 
 /* Título de comentarios */
 .comments-title {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    display: block; /* Asegura que el margen vertical funcione */
+    text-decoration: none;
+    font-size: 30px;
+    margin: 20px 0; /* 20px arriba y abajo */
     color: #ffffff;
 }
+
 
 /* Contenedor de productos */
 .products-container {

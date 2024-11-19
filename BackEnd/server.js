@@ -11,6 +11,10 @@ const formidable = require('formidable');
 const { subirImagen, obtenerImagen } = require('./src/routes/images.router.js'); // Asegúrate de importar bien
 const fs = require('fs');
 const fsPath  = require('path');
+const {login } = require('../BackEnd/src/controllers/auth.controller.js')
+const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET;
+
 
 const UPLOADS_DIR = fsPath .join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -65,6 +69,7 @@ const server = http.createServer(async (req, res) => {
     const path = parsedUrl.pathname;
     const method = req.method;
     const db = getDB();
+
 
 
     // **Agregar encabezados para CORS**
@@ -235,6 +240,7 @@ const server = http.createServer(async (req, res) => {
         // RUTA: Crear emprendimiento
         else if (path === '/emprendimientos/register' && method === 'POST') {
             const { fields, files } = await parseRequestBody(req);
+            console.log(req.fields);
             const { nombreEmprendimiento, infoContacto, correo, direccion, password, confirmpassword,  descripcion } = fields;
 
 
@@ -316,6 +322,52 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ message: 'Cliente registrado exitosamente', clienteId: resultado.insertedId }));
            
            
+        }
+
+        // login de ambos 
+
+
+        else if(path === '/login' && method === 'POST'){
+            console.log('Login request received');
+            try{
+
+              
+                const body = await parseRequestBody(req);
+                const { correo, password } = body.fields || body;
+                const clientesCollection = db.collection('clientes');
+                const emprendimientosCollection = db.collection('emprendimientos');
+
+                // Step 1: Buscar cliente en la colección 'clientes'
+                const cliente = await clientesCollection.findOne({ correoElectronico: correo });
+                const hashC = crypto.createHash('sha256').update(password).digest('hex');
+                if (cliente &&  hashC == cliente.contrasenna) {
+                const token = jwt.sign({ id: cliente._id, role: 'cliente' }, jwtSecret, { expiresIn: '1h' });
+                // Set status and send response with JSON data manually
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({  message: 'Cliente autenticado', token, role: 'cliente' }));                
+            }
+
+                // Step 2: Buscar emprendimiento en la colección 'emprendimientos'
+                const emprendimiento = await emprendimientosCollection.findOne({ correo: correo });
+                const hashE = crypto.createHash('sha256').update(password).digest('hex');
+                if (emprendimiento &&  hashE == emprendimiento.password) {
+                const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, jwtSecret, { expiresIn: '1h' });
+                
+                // Set status and send response with JSON data manually
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+              return res.end(JSON.stringify({message: 'Emprendedor autenticado', token, role: 'emprendedor' })); 
+            }
+
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Usuario no encontrado. Por favor regístrate.' }));
+
+            } catch(error){
+                console.error('Error en autenticación:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ error: 'Error interno en el servidor' }));
+
+            }
+
         }
 
         // RUTA: Obtener perfil del emprendimiento autenticado
