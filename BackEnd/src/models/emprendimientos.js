@@ -18,7 +18,8 @@ async function crearEmprendimiento(emprendimientoData) {
     // Inserta el documento con los campos definidos
     const resultado = await db.collection('emprendimientos').insertOne({
       nombreEmprendimiento: emprendimientoData.nombreEmprendimiento,
-      imagenEmprendimiento: emprendimientoData.imagenEmprendimiento || "", // Opcional
+      imagenEmprendimiento: emprendimientoData.imagenEmprendimiento || "", // Ruta de la imagen de perfil
+      bannerImage: emprendimientoData.bannerImage || "", // Ruta de la imagen del banner
       infoContacto: emprendimientoData.infoContacto,
       direccion: emprendimientoData.direccion,
       descripcion: emprendimientoData.descripcion,

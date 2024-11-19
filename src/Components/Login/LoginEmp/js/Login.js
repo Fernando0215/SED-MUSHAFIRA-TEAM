@@ -1,24 +1,31 @@
-// Select the form and add an event listener for form submission
 const form = document.getElementById("login-form");
 const errorMessagesContainer = document.createElement('div');
 errorMessagesContainer.classList.add('error-messages');
-form.prepend(errorMessagesContainer); // Add the error message container to the form
+form.prepend(errorMessagesContainer);
 
 const showErrorMessages = (messages) => {
-    errorMessagesContainer.innerHTML = ''; // Clear previous messages
+    errorMessagesContainer.innerHTML = '';
     messages.forEach((message) => {
         const errorElement = document.createElement('p');
-        errorElement.textContent = '⚠️ ' + message; // Add icon before the message
+        errorElement.textContent = '⚠️ ' + message;
         errorMessagesContainer.appendChild(errorElement);
     });
 };
 
-form.addEventListener("submit", async  (event)  => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const correo = document.getElementById("user-correo").value;
-    const password = document.getElementById("user-password").value;
+    const correoElectronico = document.getElementById("user-name").value;
+    const contrasenna = document.getElementById("user-password").value;
     const errorMessages = [];
+
+    if (!correoElectronico) {
+        errorMessages.push("El correo no puede estar vacío.");
+    }
+    if (!contrasenna) {
+        errorMessages.push("La contraseña no puede estar vacía.");
+    }
+
 
     // Validate that inputs are not empty
     if (!correo) {
@@ -37,9 +44,7 @@ form.addEventListener("submit", async  (event)  => {
 
     // Show error messages if any are present and stop the submission
     if (errorMessages.length > 0) {
-        errorMessagesContainer.style.display = 'block'; // Mostrar el contenedor
         showErrorMessages(errorMessages);
-        console.log(errorMessages);
         return;
     }
 
@@ -49,7 +54,11 @@ form.addEventListener("submit", async  (event)  => {
             headers: {
                 'Content-Type': 'application/json'
             },
+
+            body: JSON.stringify({ correoElectronico, contrasenna }),
+
             body: JSON.stringify({ correo, password })
+
         });
 
         const data = await response.json();
@@ -66,9 +75,10 @@ form.addEventListener("submit", async  (event)  => {
             const errorMsg = data.message || "Invalid email or password. Please try again.";
             showErrorMessages([errorMsg]);
         }
+        
     } catch (error) {
-        console.error("Error during login:", error);
-        showErrorMessages(["An error occurred. Please try again later."]);
+        console.error("Error durante el inicio de sesión:", error);
+        showErrorMessages(["Ocurrió un error. Por favor, inténtalo de nuevo."]);
     }
 });
 
@@ -82,3 +92,4 @@ function closeView() {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return regex.test(email);
     };
+

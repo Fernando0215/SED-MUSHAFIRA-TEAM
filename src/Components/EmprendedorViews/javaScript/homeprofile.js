@@ -1,23 +1,26 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const profileImageNav = document.getElementById("profile-image");
-    const uploadProfileNav = document.getElementById("upload-profile");
-    const uploadLabelNav = document.querySelector(".upload-label-profile");
+document.addEventListener("DOMContentLoaded", async function () {
+    const profileImage = document.getElementById("profile-image");
+    const username = document.querySelector(".username");
+    const uploadLabel = document.querySelector(".upload-label-profile");
 
-    // Función para actualizar la imagen del perfil
-    function updateProfileImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            profileImageNav.src = imageUrl;
-            profileImageNav.style.display = "block";
-            uploadLabelNav.style.display = "none";
+    const emprendimientoId = "673bc0da14756a6865c17cea"; // ID del emprendimiento
+
+    try {
+        const response = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}`);
+        if (!response.ok) {
+            throw new Error("Emprendimiento no encontrado");
         }
+
+        const emprendimiento = await response.json();
+
+        if (emprendimiento.imagenEmprendimiento) {
+            profileImage.src = `http://localhost:3000${emprendimiento.imagenEmprendimiento}`;
+            profileImage.style.display = "block";
+            uploadLabel.style.display = "none";
+        }
+
+        username.textContent = emprendimiento.nombreEmprendimiento || "Nombre";
+    } catch (error) {
+        console.error("Error al cargar la imagen de perfil:", error);
     }
-
-    uploadProfileNav.addEventListener("change", updateProfileImage);
-
-    // Permitir hacer clic en la imagen para abrir el explorador de archivos
-    profileImageNav.addEventListener("click", () => {
-        uploadProfileNav.click();
-    });
 });
