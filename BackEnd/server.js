@@ -225,6 +225,7 @@ const server = http.createServer(async (req, res) => {
         // RUTA: Crear emprendimiento
         else if (path === '/emprendimientos/register' && method === 'POST') {
             const { fields, files } = await parseRequestBody(req);
+            console.log(req.fields);
             const { nombreEmprendimiento, infoContacto, correo, direccion, password, confirmpassword,  descripcion } = fields;
 
 
