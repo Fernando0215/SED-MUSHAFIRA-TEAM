@@ -57,10 +57,10 @@ form.addEventListener("submit", async  (event)  => {
         if (response.ok) {
             localStorage.setItem('authToken', data.token);
             if (data.role === 'cliente') {
-                window.location.href = "/src/Components/ClientsViews/html/HomeClient.html";
+                window.location.href = "../../../ClientsViews/html/HomeClient.html";
 
             } else if (data.role === 'emprendedor') {
-                window.location.href = '/src/Components/EmprendedorViews/html/emprendedormenu.html';
+                window.location.href = '../../../EmprendedorViews/html/emprendedormenu.html';
             }
         } else {
             const errorMsg = data.message || "Invalid email or password. Please try again.";

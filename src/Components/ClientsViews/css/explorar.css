@@ -88,3 +88,7 @@ body {
     align-items: center;
     gap: 5px;
 }
+
+.like-button{
+    background-color: #797aac;
+}

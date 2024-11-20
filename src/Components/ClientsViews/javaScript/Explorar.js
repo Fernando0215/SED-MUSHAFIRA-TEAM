@@ -1,79 +1,89 @@
-// src/javaScript/explorarClient.js
-
-function loadCards() {
-    const searchInput = document.getElementById("searchInput");
-    const cardData = [
-        {
-            title: "El Corral",
-            description: "Lorem ipsum dolor sit amet",
-            imageUrl: "/SED-MUSHAFIRA-TEAM/src/images/iglesiaIcon.jpeg",
-            likes: 21300,
-            comments: 12400
-        },
-        {
-            title: "Coffee Place",
-            description: "Aliquam pretium sit odio non Aliquam pretium sit odio nonAliquam pretium sit odio non",
-            imageUrl: "/SED-MUSHAFIRA-TEAM/src/images/iglesiaIcon.jpeg",
-            likes: 21000,
-            comments: 12000
-        },
-        {
-            title: "Food Express",
-            description: "Ullamcorper amet dolor donec",
-            imageUrl: "/SED-MUSHAFIRA-TEAM/src/images/iglesiaIcon.jpeg",
-            likes: 21500,
-            comments: 12500
-        },
-
-        {
-            title: "Food Express",
-            description: "Ullamcorper amet dolor donec",
-            imageUrl: "../../../images/iglesiaIcon.jpeg",
-            likes: 21500,
-            comments: 12500
-        },
-
-        {
-            title: "Food Express",
-            description: "Ullamcorper amet dolor donec",
-            imageUrl: "/SED-MUSHAFIRA-TEAM/src/images/iglesiaIcon.jpeg",
-            likes: 21500,
-            comments: 12500
-        }
-        // Agrega más objetos según sea necesario
-    ];
-
+async function loadCards() {
     const cardGrid = document.getElementById("cardGrid");
+    const searchInput = document.getElementById("searchInput");
 
-    cardData.forEach(data => {
-        // Crear el elemento de tarjeta
-        const card = document.createElement("div");
-        card.classList.add("card");
+    // Fetch los emprendimientos desde el servidor
+    async function fetchEmprendimientos() {
+        try {
+            const response = await fetch("http://localhost:3000/emprendimientos");
+            if (!response.ok) throw new Error("No se pudieron cargar los emprendimientos.");
+            return await response.json();
+        } catch (error) {
+            console.error("Error al cargar emprendimientos:", error);
+            return [];
+        }
+    }
 
-        // Contenido HTML de cada tarjeta
-        card.innerHTML = `
-            <img src="${data.imageUrl}" alt="${data.title}">
-            <div class="card-content">
-                <h3>${data.title}</h3>
-                <p>${data.description}</p>
-                <div class="card-icons">
-                    <span>❤️ ${data.likes.toLocaleString()}</span>
-                    <span>💬 ${data.comments.toLocaleString()}</span>
+    // Renderizar las cards
+    function renderCards(emprendimientos) {
+        cardGrid.innerHTML = ""; // Limpiar contenido previo
+        emprendimientos.forEach(emp => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+
+            card.innerHTML = `
+                <img src="http://localhost:3000${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
+                <div class="card-content">
+                    <h3>${emp.nombreEmprendimiento}</h3>
+                    <p>${emp.descripcion}</p>
+                    <div class="card-icons">
+                        <button class="like-button" data-id="${emp._id}">❤️</button>
+                        <button class="details-button" data-id="${emp._id}">Ver Detalle</button>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+            cardGrid.appendChild(card);
+        });
 
-        // Añadir la tarjeta al grid
-        cardGrid.appendChild(card);
+        // Agregar eventos a los botones de like y detalles
+        document.querySelectorAll(".like-button").forEach(button => {
+            button.addEventListener("click", handleLike);
+        });
 
+        document.querySelectorAll(".details-button").forEach(button => {
+            button.addEventListener("click", handleDetails);
+        });
+    }
 
-    });
+    // Manejar "like"
+    async function handleLike(event) {
+        const emprendimientoId = event.target.dataset.id;
+        try {
+            const token = localStorage.getItem("authToken");
+            const response = await fetch("http://localhost:3000/clientes/likes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ emprendimientoId }),
+            });
 
+            if (!response.ok) throw new Error("Error al dar like.");
+            console.log("Like agregado correctamente");
+        } catch (error) {
+            console.error("Error al dar like:", error);
+        }
+    }
+
+    // Manejar "Ver Detalle"
+    function handleDetails(event) {
+        const emprendimientoId = event.target.dataset.id;
+        window.location.href = `./emprendimiento.html?id=${emprendimientoId}`;
+    }
+
+    // Filtro de búsqueda
     searchInput.addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase();
-        const filteredEmprendimientos = emprendimientos.filter(emp =>
-            emp.nombre.toLowerCase().includes(query)
+        const filteredCards = emprendimientos.filter(emp =>
+            emp.nombreEmprendimiento.toLowerCase().includes(query)
         );
-        displayEmprendimientos(filteredEmprendimientos);
+        renderCards(filteredCards);
     });
+
+    // Cargar y renderizar cards al inicio
+    const emprendimientos = await fetchEmprendimientos();
+    renderCards(emprendimientos);
 }
+
+document.addEventListener("DOMContentLoaded", loadCards);

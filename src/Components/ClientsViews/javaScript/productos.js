@@ -1,6 +1,12 @@
 document.addEventListener("DOMContentLoaded", async function () {
     const productsContainer = document.getElementById("products-container");
-    const emprendimientoId = "673bc0da14756a6865c17cea"; // ID del emprendimiento
+    const urlParams = new URLSearchParams(window.location.search); // Obtener ID del emprendimiento desde la URL
+    const emprendimientoId = urlParams.get("id"); // Asegúrate de que el ID esté en la URL como ?id=emprendimientoId
+
+    if (!emprendimientoId) {
+        console.error("No se proporcionó el ID del emprendimiento.");
+        return;
+    }
 
     try {
         const response = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}/productos`);
@@ -9,35 +15,21 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         const productos = await response.json();
+        productsContainer.innerHTML = ""; // Limpiar contenedor
+
         productos.forEach(producto => {
-            const productCard = document.createElement("div");
-            productCard.classList.add("product-card");
-
-            const productImage = document.createElement("img");
-            productImage.src = `http://localhost:3000${producto.imagenProducto}`;
-            productImage.alt = producto.nombre;
-            productImage.classList.add("product-image");
-
-            const productName = document.createElement("h2");
-            productName.textContent = producto.nombre;
-            productName.classList.add("product-name");
-
-            const productPrice = document.createElement("p");
-            productPrice.textContent = `$${producto.precio}`;
-            productPrice.classList.add("product-price");
-
-            const productDescription = document.createElement("div");
-            productDescription.textContent = producto.descripcion;
-            productDescription.classList.add("product-description");
-
-            productCard.appendChild(productImage);
-            productCard.appendChild(productName);
-            productCard.appendChild(productPrice);
-            productCard.appendChild(productDescription);
-
-            productsContainer.appendChild(productCard);
+            const productCard = `
+                <div class="product-card">
+                    <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" class="product-image">
+                    <h2 class="product-name">${producto.nombre}</h2>
+                    <p class="product-price">$${producto.precio}</p>
+                    <p class="product-description">${producto.descripcion}</p>
+                </div>
+            `;
+            productsContainer.innerHTML += productCard;
         });
     } catch (error) {
         console.error('Error al cargar productos:', error);
+        productsContainer.innerHTML = `<p>No se encontraron productos para este emprendimiento.</p>`;
     }
 });

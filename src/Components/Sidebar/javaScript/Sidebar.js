@@ -1,24 +1,34 @@
-// src/Sidebar/javaScript/Sidebar.js
-
-function loadSidebar(containerId) {
+async function loadSidebar(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // HTML del sidebar con rutas relativas a la carpeta 'html'
-    const sidebarHTML = `
-        <div class="sidebar">
-            <div class="user-info">
-                <img src="SED-MUSHAFIRA-TEAM/src/images/userIcon.png" alt="Usuario" class="avatar">
-                <p>Usuario</p>
-            </div>
-            <ul class="menu">
-                <li><a href="../../ClientsViews/html/HomeClient.html"><span>🏠</span> Home</a></li>
-                <li><a href="../../ClientsViews/html/index.html"><span>📷</span> Ajustes</a></li>
-                <li><a href="../../ClientsViews/html/explorar.html"><span>🌍</span> Explorar</a></li>
-            </ul>
-        </div>
-    `;
+    const token = localStorage.getItem("authToken");
 
-    // Inserta el HTML en el contenedor especificado
-    container.innerHTML = sidebarHTML;
+    try {
+        const response = await fetch("http://localhost:3000/clientes/perfil", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const cliente = await response.json();
+
+        if (response.ok) {
+            const sidebarHTML = `
+                <div class="user-info">
+                    <img src="${cliente.fotoPerfil || '/path/to/default/image.jpg'}" alt="Usuario" class="avatar">
+                    <p>${cliente.nombre} ${cliente.apellido}</p>
+                </div>
+                <ul class="menu">
+                    <li><a href="../../ClientsViews/html/HomeClient.html"><span>🏠</span> Home</a></li>
+                    <li><a href="../../ClientsViews/html/index.html"><span>📷</span> Ajustes</a></li>
+                    <li><a href="../../ClientsViews/html/explorar.html"><span>🌍</span> Explorar</a></li>
+                </ul>
+            `;
+            container.innerHTML = sidebarHTML;
+        } else {
+            console.error("Error al cargar el sidebar:", cliente.error);
+        }
+    } catch (error) {
+        console.error("Error al cargar el sidebar:", error);
+    }
 }
