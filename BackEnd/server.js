@@ -496,21 +496,23 @@ const server = http.createServer(async (req, res) => {
         // RUTA: Obtener perfil del emprendimiento autenticado
         else if (path === '/emprendimientos/perfil' && method === 'GET') {
             await verificarToken(req, res, async () => {
-                const emprendimientoId = req.usuario.id;
+                const emprendimientoId = new ObjectId(req.usuario.id); // Convertir a ObjectId
                 const emprendimiento = await db.collection('emprendimientos').findOne({ _id: emprendimientoId });
-
+        
                 if (!emprendimiento) {
                     res.writeHead(404, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
                     return;
                 }
+                console.log("ID del emprendimiento desde el token:", req.usuario.id);
 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(emprendimiento));
             });
         }
-
-        else if (path.startsWith('/emprendimientos/') && method === 'GET') {
+        
+            //////////////////////////////////
+        else if (path.startsWith('/emprendimientos/') && method === 'GET' && !path.endsWith('/comentarios')) {
             const parts = path.split('/');
             const emprendimientoId = parts[2];
 
@@ -647,39 +649,49 @@ const server = http.createServer(async (req, res) => {
         else if (path.startsWith('/emprendimientos/') && path.endsWith('/productos') && method === 'GET') {
             const parts = path.split('/');
             const emprendimientoId = parts[2];
-
+        
             if (!ObjectId.isValid(emprendimientoId)) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'ID del emprendimiento no es válido' }));
                 return;
             }
-
+        
             const productosCollection = db.collection('productos');
             const productos = await productosCollection.find({ emprendimientoId }).toArray();
 
+        
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(productos));
+
+            console.log("Productos obtenidos:", productos);
+
         }
 
 
         // Ruta: Obtener productos de un emprendimiento autenticado
         else if (path === '/productos' && method === 'GET') {
-            await verificarToken(req, res, async () => {
-                const emprendimientoId = req.usuario.id; // ID del emprendimiento autenticado
-                console.log("ID del emprendimiento autenticado:", emprendimientoId);
-
-                const productosCollection = db.collection('productos');
-
-                // Asegúrate de comparar emprendimientoId como string
-                const productos = await productosCollection.find({ emprendimientoId: emprendimientoId }).toArray();
-
-                console.log("Productos encontrados:", productos);
-
+            const queryObject = url.parse(req.url, true).query;
+            const emprendimientoId = queryObject.id;
+        
+            if (!emprendimientoId) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'ID del emprendimiento no proporcionado' }));
+                return;
+            }
+        
+            const productosCollection = db.collection('productos');
+        
+            try {
+                const productos = await productosCollection.find({ emprendimientoId }).toArray();
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(productos));
-            });
+            } catch (error) {
+                console.error('Error al obtener productos:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Error interno del servidor' }));
+            }
         }
-
+        
 
         // RUTA: Ver detalle de un producto específico
         else if (path.startsWith('/productos/') && method === 'GET') {
@@ -750,7 +762,28 @@ const server = http.createServer(async (req, res) => {
             });
         }
         
+        else if (path.startsWith('/comentarios') && method === 'GET') {
+            const queryObject = url.parse(req.url, true).query;
+            const emprendimientoId = queryObject.id;
         
+            if (!emprendimientoId) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'ID de emprendimiento no proporcionado.' }));
+                return;
+            }
+        
+            try {
+                const comentariosCollection = db.collection('comentarios');
+                const comentarios = await comentariosCollection.find({ emprendimientoId }).toArray();
+        
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(comentarios));
+            } catch (error) {
+                console.error('Error al obtener comentarios:', error);
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Error interno del servidor.' }));
+            }
+        }
 
 
         // RUTA: Crear comentario en un emprendimiento
@@ -759,6 +792,9 @@ const server = http.createServer(async (req, res) => {
             await verificarToken(req, res, async () => {
                 const parts = path.split('/');
                 const emprendimientoId = parts[2];
+
+
+             
 
                 // Validar que el emprendimientoId sea válido y exista
                 if (!ObjectId.isValid(emprendimientoId)) {
@@ -856,17 +892,90 @@ const server = http.createServer(async (req, res) => {
             });
         }
 
-        // RUTA: Obtener comentarios de un emprendimiento específico
-        else if (path.startsWith('/emprendimientos/') && path.endsWith('/comentarios') && method === 'GET') {
-            const parts = path.split('/');
-            const emprendimientoId = parts[2];
-
-            const comentariosCollection = db.collection('comentarios');
-            const comentarios = await comentariosCollection.find({ emprendimientoId: emprendimientoId }).toArray();
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(comentarios));
+        else if (path === '/emprendimientos/actualizar' && method === 'PUT') {
+            await verificarToken(req, res, async () => {
+                const { fields, files } = await parseRequestBody(req);
+                const emprendimientoId = req.usuario.id; // ID del emprendimiento autenticado
+        
+                try {
+                    const updates = {
+                        nombreEmprendimiento: fields.nombre || undefined,
+                        direccion: fields.direccion || undefined,
+                        correo: fields.correo || undefined,
+                        telefono: fields.telefono || undefined,
+                    };
+        
+                    // Actualizar imagen si se sube un archivo
+                    if (files && files.imagenEmprendimiento) {
+                        const file = files.imagenEmprendimiento;
+        
+                        if (file.filepath) {
+                            const uploadDir = fsPath.join(__dirname, 'uploads');
+        
+                            if (!fs.existsSync(uploadDir)) {
+                                fs.mkdirSync(uploadDir);
+                            }
+        
+                            const fileName = `${Date.now()}-${file.originalFilename}`;
+                            const filePath = fsPath.join(uploadDir, fileName);
+        
+                            fs.renameSync(file.filepath, filePath);
+                            updates.imagenEmprendimiento = `/uploads/${fileName}`;
+                        }
+                    }
+        
+                    // Eliminar propiedades undefined
+                    Object.keys(updates).forEach((key) => updates[key] === undefined && delete updates[key]);
+        
+                    const emprendimientosCollection = db.collection('emprendimientos');
+                    const resultado = await emprendimientosCollection.updateOne(
+                        { _id: new ObjectId(emprendimientoId) },
+                        { $set: updates }
+                    );
+        
+                    if (resultado.matchedCount === 0) {
+                        res.writeHead(404, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
+                        return;
+                    }
+        
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Emprendimiento actualizado exitosamente' }));
+                } catch (error) {
+                    console.error('Error al actualizar emprendimiento:', error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Error interno del servidor' }));
+                }
+            });
         }
+        
+
+       
+        // RUTA: Obtener comentarios de un emprendimiento específico
+        else if (path.endsWith('/comentarios.html') && method === 'GET') {
+            const queryObject = url.parse(req.url, true).query;
+            const emprendimientoId = queryObject.id;
+        
+            if (!emprendimientoId) {
+                res.statusCode = 400;
+                res.end('ID de emprendimiento no proporcionado.');
+                return;
+            }
+        
+            try {
+                const comentariosCollection = db.collection('comentarios');
+                const comentarios = await comentariosCollection.find({ emprendimientoId: emprendimientoId }).toArray();
+        
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify(comentarios));
+            } catch (error) {
+                console.error('Error al obtener comentarios:', error);
+                res.statusCode = 500;
+                res.end('Error interno del servidor.');
+            }
+        }
+        
 
         // RUTA: Administrador - Ver comentarios reportados
         else if (path === '/admin/comentarios-reportados' && method === 'GET') {

@@ -9,32 +9,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         // Cargar información del emprendimiento
         const emprendimientoResponse = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}`);
-        const emprendimiento = await emprendimientoResponse.json();
+        if (!emprendimientoResponse.ok) throw new Error("Error al cargar el emprendimiento.");
 
+        const emprendimiento = await emprendimientoResponse.json();
         const emprendimientoInfo = document.getElementById("emprendimiento-info");
         emprendimientoInfo.innerHTML = `
-            <img src="http://localhost:3000${emprendimiento.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emprendimiento.nombreEmprendimiento}" />
             <h1>${emprendimiento.nombreEmprendimiento}</h1>
+            <p>${emprendimiento.descripcion || "Sin descripción"}</p>
         `;
 
         // Cargar productos
-        const productosResponse = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}/productos`);
-        const productos = await productosResponse.json();
+        const token = localStorage.getItem("authToken");
 
-        const productosLista = document.getElementById("productos-lista");
-        productos.forEach(producto => {
-            productosLista.innerHTML += `
-                <div class="producto">
-                    <img src="http://localhost:3000${producto.imagenProducto || '/uploads/defaultImage.png'}" alt="${producto.nombre}" />
-                    <h3>${producto.nombre}</h3>
-                    <p>${producto.descripcion}</p>
-                    <p>Precio: $${producto.precio}</p>
-                </div>
-            `;
+        const productosResponse = await fetch(`http://localhost:3000/productos?id=${emprendimientoId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
         });
 
-        
+        if (!productosResponse.ok) throw new Error("Error al cargar los productos.");
+
+
+        const productos = await productosResponse.json();
+
+        console.log("ID del emprendimiento recibido:", emprendimientoId);
+
+
+        const productosLista = document.getElementById("productos-lista");
+        productosLista.innerHTML = ""; // Limpia la lista antes de añadir productos
+
+        // Validar si productos es un array
+        if (Array.isArray(productos) && productos.length > 0) {
+            productos.forEach(producto => {
+                productosLista.innerHTML += `
+                    <div class="producto">
+                        <img src="http://localhost:3000${producto.imagenProducto || '/uploads/defaultImage.png'}" 
+                             alt="${producto.nombre}" class="producto-img"/>
+                        <h3>${producto.nombre}</h3>
+                        <p>${producto.descripcion}</p>
+                        <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
+                    </div>
+                `;
+            });
+
+        } else {
+            productosLista.innerHTML = "<p>No hay productos disponibles.</p>";
+        }
     } catch (error) {
-        console.error("Error al cargar los detalles del emprendimiento:", error);
+        console.error("Error al cargar los productos:", error);
+        productosLista.innerHTML = "<p>Error al cargar los productos.</p>";
     }
 });
+
+

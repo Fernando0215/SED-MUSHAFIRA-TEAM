@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("El archivo no tiene un nombre válido.");
             return;
         }
-        
+
 
         try {
             const response = await fetch("http://localhost:3000/productos", {
@@ -90,11 +90,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Cargar productos existentes
     try {
-        const response = await fetch("http://localhost:3000/productos", {
+
+        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+        const emprendimientoId = tokenPayload.id;
+
+
+
+        const response = await fetch(`http://localhost:3000/productos?id=${emprendimientoId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
+
+        if (!response.ok) {
+            throw new Error(`Error al cargar productos. Status: ${response.status}`);
+        }
 
         const productos = await response.json();
         productos.forEach((producto) => {

@@ -14,13 +14,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Función para cargar comentarios
     async function loadComments() {
         try {
-            const response = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}/comentarios`);
-            if (!response.ok) throw new Error("No se pudieron cargar los comentarios.");
+            const response = await fetch(`http://localhost:3000/comentarios.html?id=${emprendimientoId}`);
+            if (!response.ok) {throw new Error("No se pudieron cargar los comentarios.");
 
-            const comentarios = await response.json();
+            }
+
+            const data = await response.json();
+    
+            
             commentsContainer.innerHTML = ""; // Limpiar contenedor
 
-            comentarios.forEach(comentario => {
+            data.forEach(comentario => {
                 const commentCard = `
                     <div class="comment-card">
                         <p>${comentario.contenido}</p>
