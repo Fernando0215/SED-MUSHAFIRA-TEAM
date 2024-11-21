@@ -5,7 +5,7 @@ async function loadCards() {
     cardGrid.innerHTML = '';
 
     try {
-        const response = await fetch('http://192.168.77.39/emprendimientos');
+        const response = await fetch('http://192.168.77.39:3000/emprendimientos');
         if (!response.ok) {
             throw new Error('Error al cargar los emprendimientos desde la API');
         }
@@ -17,7 +17,7 @@ async function loadCards() {
             card.classList.add("card");
 
             card.innerHTML = `
-                <img src="http://192.168.77.39${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
+                <img src="http://192.168.77.39:3000${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
                 <div class="card-content">
                     <h3>${emp.nombreEmprendimiento}</h3>
                     <p>${emp.descripcion || "Sin descripción disponible"}</p>
@@ -71,7 +71,7 @@ function displayEmprendimientos(emprendimientos) {
         card.classList.add("card");
 
         card.innerHTML = `
-            <img src="http://192.168.77.39${emp.imagenEmprendimiento}" alt="${emp.nombreEmprendimiento}">
+            <img src="http://192.168.77.39:3000${emp.imagenEmprendimiento}" alt="${emp.nombreEmprendimiento}">
             <div class="card-content">
                 <h3>${emp.nombreEmprendimiento}</h3>
                 <p>${emp.descripcion || "Sin descripción disponible"}</p>
@@ -121,7 +121,7 @@ async function loadCards() {
     cardGrid.innerHTML = '';
 
     try {
-        const response = await fetch('http://192.168.77.39/emprendimientos');
+        const response = await fetch('http://192.168.77.39:3000/emprendimientos');
         if (!response.ok) {
             throw new Error('Error al cargar los emprendimientos desde la API');
         }

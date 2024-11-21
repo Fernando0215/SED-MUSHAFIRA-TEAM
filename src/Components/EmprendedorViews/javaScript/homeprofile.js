@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     try {
         // Hacer una solicitud para obtener el perfil del emprendimiento autenticado
-        const response = await fetch(`http://192.168.77.39/emprendimientos/${emprendimientoId}`, {
+        const response = await fetch(`http://192.168.77.39:3000/emprendimientos/${emprendimientoId}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Función para cargar comentarios
     async function loadComments(emprendimientoId, token) {
         try {
-            const response = await fetch(`http://192.168.77.39/comentarios?id=${emprendimientoId}`, {
+            const response = await fetch(`http://192.168.77.39:3000/comentarios?id=${emprendimientoId}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,

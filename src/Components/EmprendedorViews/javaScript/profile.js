@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadBusinessData() {
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch("http://192.168.77.39/emprendimientos/perfil", {
+            const response = await fetch("http://192.168.77.39:3000/emprendimientos/perfil", {
                 headers: {
                     Authorization: `Bearer ${token}`, // Incluye el token
                 },
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
             // Actualiza los campos con la información del emprendimiento
             usernameSidebar.textContent = emprendimientoData.nombreEmprendimiento || "Nombre";
-            profileImageNav.src = `http://192.168.77.39${emprendimientoData.imagenEmprendimiento}`;
+            profileImageNav.src = `http://192.168.77.39:3000${emprendimientoData.imagenEmprendimiento}`;
             businessNameInput.value = emprendimientoData.nombreEmprendimiento || "";
             businessAddressInput.value = emprendimientoData.direccion || "";
             businessEmailInput.value = emprendimientoData.correo || "";
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch("http://192.168.77.39/emprendimientos/actualizar", {
+            const response = await fetch("http://192.168.77.39:3000/emprendimientos/actualizar", {
                 method: "PUT",
                 headers: {
                     Authorization: `Bearer ${token}`,

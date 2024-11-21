@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Función para cargar comentarios
     async function loadComments() {
         try {
-            const response = await fetch(`http://192.168.77.39/comentarios.html?id=${emprendimientoId}`);
+            const response = await fetch(`http://192.168.77.39:3000/comentarios.html?id=${emprendimientoId}`);
             if (!response.ok) {throw new Error("No se pudieron cargar los comentarios.");
 
             }
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!contenido) return;
 
         try {
-            const response = await fetch(`http://192.168.77.39/emprendimientos/${emprendimientoId}/comentarios`, {
+            const response = await fetch(`http://192.168.77.39:3000/emprendimientos/${emprendimientoId}/comentarios`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const profileContent = document.querySelector(".profile-content");
 
     try {
-        const response = await fetch("http://192.168.77.39/clientes/perfil", {
+        const response = await fetch("http://192.168.77.39:3000/clientes/perfil", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ async function saveProfile(event) {
     if (fileInput) formData.append("fotoPerfil", fileInput);
 
     try {
-        const response = await fetch("http://192.168.77.39/clientes/perfil", {
+        const response = await fetch("http://192.168.77.39:3000/clientes/perfil", {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
