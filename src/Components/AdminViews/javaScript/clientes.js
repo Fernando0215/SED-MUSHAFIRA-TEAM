@@ -65,7 +65,7 @@ function displayClientes(clientes) {
 async function disableCliente(id) {
     try {
         // Realizar la solicitud PATCH (o PUT dependiendo de la API)
-        const response = await fetch(`http://localhost:3000/admin/clientes/${id}`, { // Reemplaza con la URL de tu API
+        const response = await fetch(`http://192.68.134.131/admin/clientes/${id}`, { // Reemplaza con la URL de tu API
             method: "PATCH",  // O usa "PUT" si es necesario
             headers: {
                 "Content-Type": "application/json",
@@ -92,7 +92,7 @@ async function disableCliente(id) {
 async function fetchClientes() {
     try {
         
-        const response = await fetch("http://localhost:3000/clientes", {
+        const response = await fetch("http://192.68.134.131/clientes", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,

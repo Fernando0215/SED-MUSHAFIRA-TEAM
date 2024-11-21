@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Sending data to the server using fetch (POST request)
         try {
-            const response = await fetch('http://localhost:3000/emprendimientos/register', {
+            const response = await fetch('http://192.68.134.131/emprendimientos/register', {
                 method: 'POST',
                 body: formData
             });

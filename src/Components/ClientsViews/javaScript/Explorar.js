@@ -5,7 +5,7 @@ async function loadCards() {
     // Fetch los emprendimientos desde el servidor
     async function fetchEmprendimientos() {
         try {
-            const response = await fetch("http://localhost:3000/emprendimientos");
+            const response = await fetch("http://192.68.134.131/emprendimientos");
             if (!response.ok) throw new Error("No se pudieron cargar los emprendimientos.");
            
            
@@ -24,7 +24,7 @@ async function loadCards() {
             card.classList.add("card");
 
             card.innerHTML = `
-                <img src="http://localhost:3000${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
+                <img src="http://192.68.134.131${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
                 <div class="card-content">
                     <h3>${emp.nombreEmprendimiento}</h3>
                     <p>${emp.descripcion}</p>
@@ -52,7 +52,7 @@ async function loadCards() {
         const emprendimientoId = event.target.dataset.id;
         try {
             const token = localStorage.getItem("authToken");
-            const response = await fetch("http://localhost:3000/clientes/likes", {
+            const response = await fetch("http://192.68.134.131/clientes/likes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

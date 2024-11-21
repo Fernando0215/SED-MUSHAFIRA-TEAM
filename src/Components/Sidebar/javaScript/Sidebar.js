@@ -5,7 +5,7 @@ async function loadSidebar(containerId) {
     const token = localStorage.getItem("authToken");
 
     try {
-        const response = await fetch("http://localhost:3000/clientes/perfil", {
+        const response = await fetch("http://192.68.134.131/clientes/perfil", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
         });

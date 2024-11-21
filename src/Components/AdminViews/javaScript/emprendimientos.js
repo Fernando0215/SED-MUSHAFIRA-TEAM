@@ -78,7 +78,7 @@ function displayEmprendimientos(emprendimientos) {
 async function disableEmprendimiento(id) {
     try {
         // Realizar la solicitud PATCH (o PUT dependiendo de la API)
-        const response = await fetch(`http://localhost:3000/admin/emprendimientos/${id}`, { // Reemplaza con la URL de tu API
+        const response = await fetch(`http://192.68.134.131/admin/emprendimientos/${id}`, { // Reemplaza con la URL de tu API
             method: "PATCH",  // O usa "PUT" si es necesario
             headers: {
                 "Content-Type": "application/json",
@@ -107,7 +107,7 @@ async function disableEmprendimiento(id) {
 async function fetchEmprendimientos() {
     try {
         
-        const response = await fetch("http://localhost:3000/emprendimientos", {
+        const response = await fetch("http://192.68.134.131/emprendimientos", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,

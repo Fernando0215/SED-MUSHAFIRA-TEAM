@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         try {
-            const response = await fetch("http://localhost:3000/productos", {
+            const response = await fetch("http://192.68.134.131/productos", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const productCard = document.createElement("div");
             productCard.classList.add("product-card");
             productCard.innerHTML = `
-                <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" />
+                <img src="http://192.68.134.131${producto.imagenProducto}" alt="${producto.nombre}" />
                 <h3>${producto.nombre}</h3>
                 <p>Descripción: ${producto.descripcion}</p>
                 <p>$${producto.precio.toFixed(2)}</p>
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-        const response = await fetch(`http://localhost:3000/productos?id=${emprendimientoId}`, {
+        const response = await fetch(`http://192.68.134.131/productos?id=${emprendimientoId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const productCard = document.createElement("div");
             productCard.classList.add("product-card");
             productCard.innerHTML = `
-                <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" />
+                <img src="http://192.68.134.131${producto.imagenProducto}" alt="${producto.nombre}" />
                 <h3>${producto.nombre}</h3>
                 <p>$${producto.precio.toFixed(2)}</p>
             `;
