@@ -1,131 +1,66 @@
 /* General */
 body {
-    font-family: Arial, sans-serif;
+    background-color: rgb(93, 31, 150);
+    color: aliceblue;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #2d2a45;
 }
 
-/* Contenedor principal */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-}
-
-/* Flecha de regreso */
-.back-arrow {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 1.5rem;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
-    z-index: 10;
-    transition: color 0.3s;
-}
-
-.back-arrow:hover {
-    color: #d9534f;
-}
-
-/* Banner */
-.banner {
-    width: 100%;
-    height: 400px; /* Ajusta la altura según lo desees */
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 10px;
-    position: relative;
-  }
-
-.banner img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    margin-bottom: 20px;
-    object-fit: cover;
-}
-
-/* Título de comentarios */
-.comments-title {
-    display: block; /* Asegura que el margen vertical funcione */
-    text-decoration: none;
-    font-size: 30px;
-    margin: 20px 0; /* 20px arriba y abajo */
-    color: #ffffff;
-}
-
-
-/* Contenedor de productos */
-.products-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Tamaño reducido */
-    gap: 20px;
-}
-
-/* Tarjeta de producto */
-.product-card {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+#emprendimiento-info {
     text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin: 10px 0;
+    color: white;
+}
+
+.productos-lista, .comentarios-lista {
+    margin: 20px auto;
     padding: 10px;
-    transition: transform 0.3s, margin-left 0.3s;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.product-card:hover {
-    transform: scale(1.05);
-}
-
-/* Imagen del producto */
-.product-image {
-    width: 100%;
-    height: auto;
+    max-width: 90%;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    margin-bottom: 10px;
 }
 
-/* Nombre del producto */
-.product-name {
-    font-size: 1rem;
-    margin: 5px 0;
+.producto, .comentario {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f4eeee;
+    color: #333;
+}
+
+.producto {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.producto-img {
+    max-width: 150px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.comentario {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.comentario-fecha {
+    font-size: 0.9rem;
     color: #555;
 }
 
-/* Precio del producto */
-.product-price {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #d9534f;
-}
-
-/* Descripción del producto (ajustes para despliegue completo) */
-.product-description {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    width: 100%; /* Ajustamos el ancho al 100% de la tarjeta */
-    background-color: #fff;
-    height: 100%;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start; /* Alineación del texto a la izquierda */
-    transition: left 0.3s ease-in-out;
-    text-align: left;
-    overflow-y: auto; /* Permite scroll si el texto es demasiado largo */
-    font-size: 0.9rem; /* Ajuste del tamaño del texto */
-}
-
-.product-card.active .product-description {
-    left: 0; /* Despliega la descripción al ocupar el área visible */
+a.comments-title {
+    font-size: 1.8rem;
+    color: aliceblue;
+    text-decoration: none;
+    cursor: pointer;
 }

@@ -1,35 +1,65 @@
-document.addEventListener("DOMContentLoaded", async function () {
-    const productsContainer = document.getElementById("products-container");
-    const urlParams = new URLSearchParams(window.location.search); // Obtener ID del emprendimiento desde la URL
-    const emprendimientoId = urlParams.get("id"); // Asegúrate de que el ID esté en la URL como ?id=emprendimientoId
+document.addEventListener("DOMContentLoaded", async () => {
+    const emprendimientoId = new URLSearchParams(window.location.search).get("id");
 
     if (!emprendimientoId) {
-        console.error("No se proporcionó el ID del emprendimiento.");
+        alert("No se encontró el ID del emprendimiento.");
         return;
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}/productos`);
-        if (!response.ok) {
-            throw new Error('Productos no encontrados');
-        }
+        // Cargar información del emprendimiento
+        const emprendimientoResponse = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}`);
+        if (!emprendimientoResponse.ok) throw new Error("Error al cargar el emprendimiento.");
 
-        const productos = await response.json();
-        productsContainer.innerHTML = ""; // Limpiar contenedor
+        const emprendimiento = await emprendimientoResponse.json();
+        const emprendimientoInfo = document.getElementById("emprendimiento-info");
+        emprendimientoInfo.innerHTML = `
+            <h1>${emprendimiento.nombreEmprendimiento}</h1>
+            <p>${emprendimiento.descripcion || "Sin descripción"}</p>
+        `;
 
-        productos.forEach(producto => {
-            const productCard = `
-                <div class="product-card">
-                    <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" class="product-image">
-                    <h2 class="product-name">${producto.nombre}</h2>
-                    <p class="product-price">$${producto.precio}</p>
-                    <p class="product-description">${producto.descripcion}</p>
-                </div>
-            `;
-            productsContainer.innerHTML += productCard;
+        // Cargar productos
+        const token = localStorage.getItem("authToken");
+
+        const productosResponse = await fetch(`http://localhost:3000/productos?id=${emprendimientoId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
         });
+
+        if (!productosResponse.ok) throw new Error("Error al cargar los productos.");
+
+
+        const productos = await productosResponse.json();
+
+        console.log("ID del emprendimiento recibido:", emprendimientoId);
+
+
+        const productosLista = document.getElementById("productos-lista");
+        productosLista.innerHTML = ""; // Limpia la lista antes de añadir productos
+
+        // Validar si productos es un array
+        if (Array.isArray(productos) && productos.length > 0) {
+            productos.forEach(producto => {
+                productosLista.innerHTML += `
+                    <div class="producto">
+                        <img src="http://localhost:3000${producto.imagenProducto || '/uploads/defaultImage.png'}" 
+                             alt="${producto.nombre}" class="producto-img"/>
+                        <h3>${producto.nombre}</h3>
+                        <p>${producto.descripcion}</p>
+                        <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
+                    </div>
+                `;
+            });
+
+        } else {
+            productosLista.innerHTML = "<p>No hay productos disponibles.</p>";
+        }
     } catch (error) {
-        console.error('Error al cargar productos:', error);
-        productsContainer.innerHTML = `<p>No se encontraron productos para este emprendimiento.</p>`;
+        console.error("Error al cargar los productos:", error);
+        productosLista.innerHTML = "<p>Error al cargar los productos.</p>";
     }
 });
+
+
