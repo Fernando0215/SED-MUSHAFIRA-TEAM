@@ -1,20 +1,22 @@
 .sidebar {
     width: 200px;
-    height: 90vh;
+    height: 80vh;
     background-color: #f8f8f8;
     position: fixed;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra los elementos verticalmente */
+    align-items: center; /* Centra verticalmente */
     border-radius: 15px;
     overflow: hidden;
+    padding-top: 20px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
     color: black;
-    margin-bottom: 150px; /* Ajusta el espacio debajo de la información del usuario */
+    padding-bottom: 80px;
+    justify-content: center; /* Centra el texto y el ícono horizontalmente */
 }
 
 .avatar {
@@ -27,21 +29,32 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 100%; /* Asegura que los elementos ocupen todo el ancho del sidebar */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los elementos horizontalmente */
 }
 
 .menu li {
-    margin: 20px 0; /* Espaciado uniforme entre los elementos */
+    margin: 20px 0; /* Espaciado entre los elementos */
     width: 100%;
-    text-align: center; /* Centra el texto dentro del ancho disponible */
 }
 
 .menu li a {
     display: flex;
     align-items: center;
-    justify-content: center; /* Centra el ícono y el texto en cada elemento */
+    justify-content: center; /* Centra el ícono y el texto dentro del enlace */
     text-decoration: none;
     color: black;
+    padding: 10px;
+    width: 100%;
+    transition: background-color 0.3s, color 0.3s; /* Suaviza el efecto hover */
+}
+
+.menu li a:hover {
+    background-color: #662b93; /* Color de fondo para el hover */
+    color: #e9e7ed; /* Cambia el color del texto e ícono */
+    border-radius: 10px;
 }
 
 .menu li a img {

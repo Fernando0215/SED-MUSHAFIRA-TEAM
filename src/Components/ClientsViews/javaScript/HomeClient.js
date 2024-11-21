@@ -1,64 +1,83 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const BASE_URL = "https://red-lucky-cuttlefish.cyclic.app/api/v1";
-    const cardsContainer = document.getElementById("cards");
+async function loadFavorites() {
+    const emprendimientosContainer = document.getElementById("emprendimientosContainer");
 
-    // Función para obtener los emprendimientos de la API
-    const fetchEmprendimientos = async () => {
-        try {
-            const response = await fetch(`${BASE_URL}/emprendimientos`);
-            const data = await response.json();
-            renderEmprendimientos(data.data);
-        } catch (error) {
-            console.error("Error al obtener productos", error);
+    try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch("http://localhost:3000/clientes/favoritos", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error("Error al cargar favoritos:", error);
+            throw new Error("Error al cargar favoritos");
         }
-    };
 
-    // Función para renderizar los emprendimientos en la página
-    const renderEmprendimientos = (emprendimientos) => {
-        cardsContainer.innerHTML = ""; // Limpiar contenido previo
-        emprendimientos.forEach((emprendimiento) => {
-            const card = document.createElement("section");
-            card.classList.add("main-card");
+        const favoritos = await response.json();
+
+        if (!Array.isArray(favoritos) || favoritos.length === 0) {
+            console.warn("No se encontraron favoritos para este cliente.");
+            emprendimientosContainer.innerHTML = `<p>No tienes favoritos aún.</p>`;
+            return;
+        }
+
+        emprendimientosContainer.innerHTML = ""; // Limpiar contenido previo
+
+        favoritos.forEach((emp) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+
             card.innerHTML = `
+                <img src="http://localhost:3000${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
                 <div class="card-content">
-                    <div class="content-left">
-                        <button>
-                            <img class="full-img" src="${emprendimiento.imagenEmprendimiento}" alt="${emprendimiento.nombreEmprendimiento}">
-                        </button>
-                    </div>
-                    <div class="content-right">
-                        <h2 class="EmprenName">${emprendimiento.nombreEmprendimiento}</h2>
-                        <p>${emprendimiento.descripcion}</p>
-                        <button class="like-button" data-id="${emprendimiento._id}">
-                            <div class="tag">
-                                <img class="icon" src="../images/heartIcon.png" alt="Corazón">
-                            </div>
-                        </button>
-                    </div>
+                    <h3>${emp.nombreEmprendimiento}</h3>
+                    <p>${emp.descripcion}</p>
+                    <button class="delete-favorite" data-id="${emp._id}">Eliminar de favoritos</button>
                 </div>
             `;
-            cardsContainer.appendChild(card);
+            emprendimientosContainer.appendChild(card);
         });
-    };
 
-    // Función para manejar el clic en el botón "like"
-    const handleLikeClick = (emprendimientoId) => {
-        const likeButton = document.querySelector(`button[data-id="${emprendimientoId}"] .icon`);
-        if (likeButton.src.includes("heartIcon.png")) {
-            likeButton.src = "images/heartFullIcon.png";
+        // Agregar eventos a los botones de eliminar
+        document.querySelectorAll(".delete-favorite").forEach((button) => {
+            button.addEventListener("click", async (event) => {
+                const emprendimientoId = event.target.getAttribute("data-id");
+                await deleteFavorite(emprendimientoId);
+            });
+        });
+    } catch (error) {
+        console.error("Error al cargar favoritos:", error);
+        emprendimientosContainer.innerHTML = `<p>Ocurrió un error al cargar tus favoritos. Intenta nuevamente.</p>`;
+    }
+}
+
+async function deleteFavorite(emprendimientoId) {
+    try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch("http://localhost:3000/clientes/favoritos", {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ emprendimientoId }),
+        });
+
+        if (response.ok) {
+            alert("Favorito eliminado correctamente");
+            loadFavorites(); // Recargar favoritos después de eliminar
         } else {
-            likeButton.src = "images/heartIcon.png";
+            const error = await response.json();
+            console.error("Error al eliminar favorito:", error);
+            alert("Error al eliminar favorito.");
         }
-    };
+    } catch (error) {
+        console.error("Error al eliminar favorito:", error);
+    }
+}
 
-    // Evento para capturar los clics en los botones "like"
-    cardsContainer.addEventListener("click", (e) => {
-        if (e.target.closest(".like-button")) {
-            const emprendimientoId = e.target.closest(".like-button").dataset.id;
-            handleLikeClick(emprendimientoId);
-        }
-    });
-
-    // Ejecutar la función para obtener y mostrar los emprendimientos al cargar la página
-    fetchEmprendimientos();
-});
+// Cargar favoritos cuando se cargue el DOM
+document.addEventListener("DOMContentLoaded", loadFavorites);

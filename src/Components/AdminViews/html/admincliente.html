@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprendimientos</title>
+    <link rel="stylesheet" href="../css/admincliente.css">
+</head>
+<body>
+    <div class="sidebar neon-border">
+        <div class="profile">
+          <img id="profile-image" class="profile-image" src="../../../images/user.jpg" alt="Profile Image">
+          <p id="username-sidebar" class="username">Nombre</p>
+        </div>
+      
+        <nav>
+          <a href="adminemprendimiento.html">Emprendimientos</a>
+          <a href="admincliente.html"  class="active" >Clientes</a>
+          <a href="adminajuste.html" >Ajustes</a>
+        </nav>
+    </div>
+
+    <div class="client-container">
+        <div class="search-bar-container">
+            <input type="text" class="search-bar" placeholder="Buscar cliente...">
+        </div>
+        <div id="clients-container">
+            <!-- Las tarjetas dinámicas se generarán aquí -->
+        </div>
+    </div>
+    
+
+    <script src="../javaScript/clientes.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentarios</title>
+    <link rel="stylesheet" href="../css/emprendedorcomments.css">
+    <style>
+        /* Ajuste del contenedor de comentarios */
+        #comments-container {
+            margin-left: 150px; /* Separación del sidebar */
+            padding: 20px;
+            width: calc(100% - 300px); /* Hacerlo más ancho */
+            background-color: #92749d;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-card p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .comment-card small {
+            display: block;
+            margin-top: 10px;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar neon-border">
+        <div class="profile">
+            <input type="file" id="upload-profile" class="upload-input" accept="image/*" style="display: none;">
+            <label for="upload-profile" class="upload-label-profile">Upload Image</label>
+            <img id="profile-image" class="profile-image" src="" alt="Profile Image" style="display: none;">
+            <p id="username-sidebar" class="username">Nombre</p>
+        </div>
+      
+        <nav>
+            <a href="emprendedormenu.html">Home</a>
+            <a href="emprendedorajustes.html">Ajustes</a>
+            <a href="emprendedorcomments.html" class="active">Comentarios</a>
+        </nav>
+    </div>
+
+    <div id="comments-container" class="comments-container">
+        <!-- Los comentarios se cargarán dinámicamente aquí -->
+    </div>
+
+    <script src="../javaScript/homeprofile.js"></script>
+</body>
+</html>

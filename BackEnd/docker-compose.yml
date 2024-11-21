@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+  server:
+    build:
+      context: .
+    container_name: node_server
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/app_emprendimientos
+      - DB_NAME=app_emprendimientos
+    depends_on:
+      - mongodb
+    restart: always
+
+volumes:
+  mongodb_data:
