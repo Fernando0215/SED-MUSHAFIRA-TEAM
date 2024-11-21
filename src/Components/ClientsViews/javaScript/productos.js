@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         // Cargar información del emprendimiento
-        const emprendimientoResponse = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}`);
+        const emprendimientoResponse = await fetch(`http://192.168.77.39/emprendimientos/${emprendimientoId}`);
         if (!emprendimientoResponse.ok) throw new Error("Error al cargar el emprendimiento.");
 
         const emprendimiento = await emprendimientoResponse.json();
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Cargar productos
         const token = localStorage.getItem("authToken");
 
-        const productosResponse = await fetch(`http://localhost:3000/productos?id=${emprendimientoId}`, {
+        const productosResponse = await fetch(`http://192.168.77.39/productos?id=${emprendimientoId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             productos.forEach(producto => {
                 productosLista.innerHTML += `
                     <div class="producto">
-                        <img src="http://localhost:3000${producto.imagenProducto || '/uploads/defaultImage.png'}" 
+                        <img src="http://192.168.77.39${producto.imagenProducto || '/uploads/defaultImage.png'}" 
                              alt="${producto.nombre}" class="producto-img"/>
                         <h3>${producto.nombre}</h3>
                         <p>${producto.descripcion}</p>

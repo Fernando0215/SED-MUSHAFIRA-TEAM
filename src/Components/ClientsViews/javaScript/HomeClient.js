@@ -3,7 +3,7 @@ async function loadFavorites() {
 
     try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("http://localhost:3000/clientes/favoritos", {
+        const response = await fetch("http://192.168.77.39/clientes/favoritos", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -31,7 +31,7 @@ async function loadFavorites() {
             card.classList.add("card");
 
             card.innerHTML = `
-                <img src="http://localhost:3000${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
+                <img src="http://192.168.77.39${emp.imagenEmprendimiento || '/uploads/defaultImage.png'}" alt="${emp.nombreEmprendimiento}">
                 <div class="card-content">
                     <h3>${emp.nombreEmprendimiento}</h3>
                     <p>${emp.descripcion}</p>
@@ -57,7 +57,7 @@ async function loadFavorites() {
 async function deleteFavorite(emprendimientoId) {
     try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("http://localhost:3000/clientes/favoritos", {
+        const response = await fetch("http://192.168.77.39/clientes/favoritos", {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`,
