@@ -661,6 +661,29 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify(emprendimientos));
         }
 
+
+          // RUTA: Obtener todos los emprendimientos
+          else if (path === '/clientes' && method === 'GET') {
+            const clientesCollection = db.collection('clientes');
+            const clientes = await clientesCollection.find().toArray();
+
+            
+            // Verificar que la imagen sea válida; usar una imagen predeterminada si no existe
+            clientes.forEach(cliente => {
+                if (!cliente.fotoPerfil|| !fs.existsSync(fsPath.join(__dirname, cliente.fotoPerfil))) {
+                    cliente.fotoPerfil = '/uploads/defaultImage.png'; // Imagen predeterminada
+                }
+            });
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify(clientes));
+        }
+
+
+
+
+
+
         // RUTA: Obtener productos de un emprendimiento específico
         else if (path.startsWith('/emprendimientos/') && path.endsWith('/productos') && method === 'GET') {
             const parts = path.split('/');
@@ -1026,11 +1049,6 @@ const server = http.createServer(async (req, res) => {
           else if (path.startsWith('/admin/emprendimientos/') && method === 'PATCH') {
             const parts = path.split('/');
             const emprendimientoId = parts[3];
-          
-
-
-
-           
             try {
             myid = new ObjectId(emprendimientoId);  // Intentar convertir a ObjectId
             } catch (e) {
@@ -1039,9 +1057,6 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ error: 'ID inválido' }));
             return;
             }
-
-           
-
 
             const emprendimientosCollection = db.collection('emprendimientos');
             const resultado = await emprendimientosCollection.updateOne(
@@ -1061,6 +1076,41 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ message: 'Cliente eliminado exitosamente' }));
         }
+
+
+         // RUTA: Administrador - Eliminar cliente reportado
+         else if (path.startsWith('/admin/clientes/') && method === 'PATCH') {
+            const parts = path.split('/');
+            const clienteId = parts[3];
+            try {
+            myid = new ObjectId(clienteId);  // Intentar convertir a ObjectId
+            } catch (e) {
+            console.error("Error al convertir el ID:", e);  // Ver si hay algún error en la conversión
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'ID inválido' }));
+            return;
+            }
+            const clientesCollection = db.collection('clientes');
+            const resultado = await clientesCollection.updateOne(
+                { _id: myid },  // Buscar el emprendimiento por ID
+                { $set: { habilitado: false } }  // Actualizar el campo habilitado a false
+            );
+            
+
+            if (resultado.matchedCount === 0) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
+                return;
+            }
+
+            console.log(resultado);
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Cliente deshabilitado exitosamente' }));
+        }
+
+
+
         // RUTA NO ENCONTRADA
         else {
             res.writeHead(404, { 'Content-Type': 'application/json' });

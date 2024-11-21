@@ -7,6 +7,8 @@ async function loadCards() {
         try {
             const response = await fetch("http://localhost:3000/emprendimientos");
             if (!response.ok) throw new Error("No se pudieron cargar los emprendimientos.");
+           
+           
             return await response.json();
         } catch (error) {
             console.error("Error al cargar emprendimientos:", error);
@@ -83,7 +85,10 @@ async function loadCards() {
 
     // Cargar y renderizar cards al inicio
     const emprendimientos = await fetchEmprendimientos();
-    renderCards(emprendimientos);
+    
+    const emprendimientosHabilitados = emprendimientos.filter(emp => emp.habilitado === true);
+  
+    renderCards(emprendimientosHabilitados);
 }
 
 document.addEventListener("DOMContentLoaded", loadCards);
