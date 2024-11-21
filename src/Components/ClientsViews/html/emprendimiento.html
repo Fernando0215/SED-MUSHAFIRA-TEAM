@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del Emprendimiento</title>
+  <link rel="stylesheet" href="../css/emprendimientos.css">
+</head>
+<body>
+
+  <div id="emprendimiento-detalle">
+    <div id="emprendimiento-info" class="emprendimiento-info">
+      <!-- Aquí se cargará la información del emprendimiento -->
+    </div>
+
+    <h2>Productos</h2>
+    <div id="productos-lista" class="productos-lista">
+        <h2>Productos</h2>
+        <div class="producto">
+          <!-- Aquí se generarán dinámicamente -->
+        </div>
+      </div>
+      
+      <div id="comentarios-lista" class="comentarios-lista">
+
+      
+
+  <script src="../javaScript/productos.js" defer></script>
+
+    
+    <!-- Contenedor principal -->
+    <div class="container">
+        <!-- Banner -->
+        <!-- Comentarios -->
+        <a id="comments-link" href="#" class="comments-title">Comentarios</a>
+        <p>Clickea "Comentario" y dejanos tu review</p>
+        <!-- Productos -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const productsContainer = document.getElementById("products-container");
+            const commentsLink = document.getElementById("comments-link"); 
+            const urlParams = new URLSearchParams(window.location.search);
+            const emprendimientoId = urlParams.get("id"); // Obtener ID del emprendimiento desde la URL
+
+       // Dynamically set the comments link
+        if (emprendimientoId) {
+        const commentsLink = document.getElementById("comments-link");
+        commentsLink.href = `comentarios.html?id=${emprendimientoId}`;
+        } else {
+        console.error("No se proporcionó el ID del emprendimiento para el enlace de comentarios.");
+    }
+           
+            const response = await fetch(`http://192.168.77.39:3000/emprendimientos/${emprendimientoId}`);
+            if (!response.ok) throw new Error("Error al cargar el emprendimiento.");
+            const emprendimiento = await response.json();
+            
+        });
+    </script>
+    <script src="../javaScript/productos.js"></script>
+</body>
+</html>

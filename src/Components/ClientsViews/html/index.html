@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajustes Cliente</title>
+    <link rel="stylesheet" href="../css/ajustes.css">
+    <link rel="stylesheet" href="../../Sidebar/css/Sidebar.css">
+    <link rel="stylesheet" href="../../Navbar/css/navbar.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbarContainer"></div>
+
+    <!-- Contenido principal (ahora con margen superior para evitar superposición) -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div id="sidebarContainer" class="sidebar"></div>
+
+        <!-- Contenido principal de la página -->
+        <main class="content">
+            <div class="cards">
+                <section class="main-card" id="ajustes">
+                    <button class="edit-profile">Editar perfil</button>
+                    <div class="profile-content">
+                        <img class="profile-img" src="/SED-MUSHAFIRA-TEAM/src/images/ImgChat.png" alt="Imagen de usuario">
+                        <h2 class="user-name">Name LastName</h2>
+                        <p>Email: 00103722@uca.edu.sv</p>
+                        <p>Numero de telefono: 7789 5279</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../Sidebar/javaScript/Sidebar.js"></script>
+    <script src="../../Navbar/javaScript/navbar.js"></script>
+    <script src="../javaScript/AjustesClient.js"></script>
+    <script>
+        // Cargar el sidebar y la navbar en los contenedores especificados
+        loadSidebar("sidebarContainer");
+        loadNavbar("navbarContainer");
+    </script>
+</body>
+</html>

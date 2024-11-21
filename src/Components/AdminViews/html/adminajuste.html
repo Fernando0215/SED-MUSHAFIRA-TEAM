@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprendimientos</title>
+    <link rel="stylesheet" href="../css/adminajuste.css">
+</head>
+<body>
+    <div class="sidebar neon-border">
+        <div class="profile">
+          <img id="profile-image" class="profile-image" src="../../../images/user.jpg" alt="Profile Image">
+          <p id="username-sidebar" class="username">Nombre</p>
+        </div>
+      
+        <nav>
+          <a href="adminemprendimiento.html">Emprendimientos</a>
+          <a href="admincliente.html">Clientes</a>
+          <a href="emprendedorajustes.html"   class="active" >Ajustes</a>
+        </nav>
+    </div>
+
+    <div class="main">
+        <div class="profile-card">
+          <button id="edit-profile-btn" class="edit-btn">Editar perfil</button>
+          <div class="profile-content">
+            <img id="profile-img" class="profile-image" src="../../../images/user.jpg" alt="Profile Image">
+            <h3 id="profile-name">Name last name</h3>
+            <p id="profile-email">Email: 00103722@uca.edu.sv</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal -->
+      <div id="editModal" class="modal">
+        <div class="modal-content">
+          <span id="closeModal" class="close">&times;</span>
+          <h2>Editar Perfil</h2>
+          <form id="editProfileForm">
+            <label for="name">Nombre:</label>
+            <input type="text" id="editName" name="name" value="Name last name" required>
+      
+            <label for="email">Correo:</label>
+            <input type="email" id="editEmail" name="email" value="00103722@uca.edu.sv" required>
+      
+            <button type="submit" class="save-btn">Guardar</button>
+          </form>
+        </div>
+      </div>
+    
+
+    <script src="../javaScript/ajuste.js"></script>
+</body>
+</html>

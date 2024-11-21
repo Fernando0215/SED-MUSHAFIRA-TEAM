@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Cliente</title>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/ClienteOEmp.css">
+
+</head>
+<body>
+    <header>
+      
+    </header>
+    <body>
+       
+    <div id="card1">
+        
+        <div id="card1-content">
+            <button class="close-button" onclick="window.location.href='../../InicioRegister/html/InicioRegister.html';">  × </button>
+            <div id="card1-title">
+                <h1 class='h2-1'> Registrarse</h1>
+                <h3 class='h3'>Descubre negocios, date cuenta de promos y más</h3>
+            </div>
+            <form method="post" class="form1" action="../../../Login/LoginEmp/html/LoginEmprendedor.html">
+                
+                <input id="nombreUsuario" name="nombre" class="form1-content" type="text" required  placeholder="Nombre" />
+
+              
+                <input id="apellido" name="apellido" class="form1-content" type="text" required placeholder="Apellido"/>
+
+                
+                <input id="fotoPerfil" name="fotoPerfil" class="form1-content" type="file" accept="image/*" required />
+                
+                <input id="Contacto" name="infoContacto" class="form1-content" type="tel" required placeholder="Contacto" />
+
+                
+                <input id="user-email" name="correoElectronico" class="form1-content" type="email" required placeholder="Email" />
+
+                
+                <input id="user1-password" name="contrasenna" class="form1-content" type="password" required placeholder="Contraseña" />
+
+                
+                <input id="user2-password" name="confirmcontrasenna" class="form1-content" type="password" required placeholder="Confirma tu contraseña" />
+
+                <input id="submit-boton" type="submit" name="submit" value="Register" />
+
+            </form>
+            <button type="button" class="btn-go-to-login" onclick="window.location.href='../../../Login/LoginEmp/html/LoginEmprendedor.html';">Go to Login</button>
+
+        </div>
+    </div>
+    <script src="../js/RegisterJS.js"></script>
+</body>
+</html>

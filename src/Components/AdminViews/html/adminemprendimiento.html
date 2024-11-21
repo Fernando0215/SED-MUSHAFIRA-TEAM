@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprendimientos</title>
+    <link rel="stylesheet" href="../css/adminemprendimientos.css">
+</head>
+<body>
+    <div class="sidebar neon-border">
+        <div class="profile">
+          <img id="profile-image" class="profile-image" src="../../../images/user.jpg" alt="Profile Image">
+          <p id="username-sidebar" class="username">Nombre</p>
+        </div>
+      
+        <nav>
+          <a href="adminemprendimiento.html" class="active">Emprendimientos</a>
+          <a href="admincliente.html" >Clientes</a>
+          <a href="adminajuste.html" >Ajustes</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <input type="text" placeholder="Buscar emprendimientos..." class="search-bar">
+        </header>
+        
+        <div id="emprendimientos-container" class="emprendimientos-container">
+            <!-- Aquí se generarán dinámicamente las cards -->
+        </div>
+    </div>
+
+    <script src="../javaScript/emprendimientos.js"></script>
+</body>
+</html>
