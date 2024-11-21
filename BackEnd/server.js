@@ -505,8 +505,8 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify(emprendimiento));
             });
         }
-
-        else if (path.startsWith('/emprendimientos/') && method === 'GET') {
+            //////////////////////////////////
+        else if (path.startsWith('/emprendimientos/') && method === 'GET' && !path.endsWith('/comentarios')) {
             const parts = path.split('/');
             const emprendimientoId = parts[2];
 
@@ -722,6 +722,9 @@ const server = http.createServer(async (req, res) => {
                 const parts = path.split('/');
                 const emprendimientoId = parts[2];
 
+
+             
+
                 // Validar que el emprendimientoId sea válido y exista
                 if (!ObjectId.isValid(emprendimientoId)) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -818,17 +821,36 @@ const server = http.createServer(async (req, res) => {
             });
         }
 
+
+
+       
         // RUTA: Obtener comentarios de un emprendimiento específico
-        else if (path.startsWith('/emprendimientos/') && path.endsWith('/comentarios') && method === 'GET') {
-            const parts = path.split('/');
-            const emprendimientoId = parts[2];
+        else if (path.endsWith('/comentarios.html') && method === 'GET') {
+        // Analizar la URL para extraer el parámetro `id`
+    const queryObject = url.parse(req.url, true).query;
+    const emprendimientoId = queryObject.id;
+ 
+    
 
-            const comentariosCollection = db.collection('comentarios');
-            const comentarios = await comentariosCollection.find({ emprendimientoId: emprendimientoId }).toArray();
+    if (!emprendimientoId) {
+        res.statusCode = 400;
+        res.end('ID de emprendimiento no proporcionado.');
+        return;
+    }
 
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify(comentarios));
-        }
+    try {
+        const comentariosCollection = db.collection('comentarios');
+        const comentarios = await comentariosCollection.find({ emprendimientoId: emprendimientoId }).toArray();
+
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(comentarios));
+    } catch (error) {
+        console.error('Error al obtener comentarios:', error);
+        res.statusCode = 500;
+        res.end('Error interno del servidor.');
+    }
+}
 
         // RUTA: Administrador - Ver comentarios reportados
         else if (path === '/admin/comentarios-reportados' && method === 'GET') {
