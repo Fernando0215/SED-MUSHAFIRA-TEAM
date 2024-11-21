@@ -7,7 +7,8 @@ const esquemaEmprendimiento = Joi.object({
     direccion: Joi.string().min(5).max(200).required(),
     descripcion: Joi.string().min(10).max(500).required(),
     correo: Joi.string().email().required(),
-    password: Joi.string().min(8).max(30).required()
+    password: Joi.string().min(8).max(30).required(),
+    habilitado: Joi.boolean().default(true),
 });
 
 async function validarEmprendimiento(data) {

@@ -62,6 +62,10 @@ form.addEventListener("submit", async  (event)  => {
             } else if (data.role === 'emprendedor') {
                 window.location.href = '../../../EmprendedorViews/html/emprendedormenu.html';
             }
+            else if (data.role === 'admin') {
+                window.location.href = '../../../AdminViews/html/adminemprendimiento.html';
+            }
+
         } else {
             const errorMsg = data.message || "Invalid email or password. Please try again.";
             showErrorMessages([errorMsg]);

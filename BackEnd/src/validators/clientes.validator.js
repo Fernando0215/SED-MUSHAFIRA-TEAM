@@ -7,6 +7,7 @@ const esquemaCliente = Joi.object({
     contrasenna: Joi.string().min(6).required(),
     infoContacto: Joi.string().required(),
     fotoPerfil: Joi.string().optional(), // Campo opcional
+    habilitado: Joi.boolean().default(true),
 });
 
 async function validarCliente(data) {

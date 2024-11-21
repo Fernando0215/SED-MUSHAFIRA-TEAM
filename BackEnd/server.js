@@ -14,6 +14,8 @@ const fsPath = require('path');
 const { login } = require('../BackEnd/src/controllers/auth.controller.js')
 const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
+const { verifyPassword } = require('./src/utils/verify.js');
+//const { ObjectId } = require('mongodb');  // Requerir ObjectId de MongoDB
 
 
 process.on('uncaughtException', (err) => {
@@ -88,7 +90,7 @@ const server = http.createServer(async (req, res) => {
 
     // **Agregar encabezados para CORS**
     res.setHeader('Access-Control-Allow-Origin', '*'); // Permitir todas las solicitudes
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Métodos permitidos
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH'); // Métodos permitidos
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Encabezados permitidos
 
     // Manejar solicitudes preflight (opcional)
@@ -461,6 +463,7 @@ const server = http.createServer(async (req, res) => {
 
                 const clientesCollection = db.collection('clientes');
                 const emprendimientosCollection = db.collection('emprendimientos');
+                const adminCollection = db.collection('admin');
 
                 // Buscar cliente
                 const cliente = await clientesCollection.findOne({ correoElectronico: correo });
@@ -477,6 +480,19 @@ const server = http.createServer(async (req, res) => {
                     const token = jwt.sign({ id: emprendimiento._id, role: 'emprendedor' }, jwtSecret, { expiresIn: '3h' });
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     return res.end(JSON.stringify({ message: 'Emprendedor autenticado', token, role: 'emprendedor' }));
+                }
+
+
+
+                 // Buscar cliente
+                const admin = await adminCollection.findOne({ email: correo });
+                if (admin) {
+                const isValid = verifyPassword(admin.password, admin.salt, password);
+                if (isValid) {
+                const token = jwt.sign({ id: admin._id, role: 'admin' }, jwtSecret, { expiresIn: '1h' });
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ message: 'Cliente autenticado', token, role: 'admin' }));
+                }
                 }
 
                 // Si no se encuentra el usuario
@@ -880,6 +896,46 @@ const server = http.createServer(async (req, res) => {
         }
 
 
+
+          // RUTA: Administrador - Eliminar cliente reportado
+          else if (path.startsWith('/admin/emprendimientos/') && method === 'PATCH') {
+            const parts = path.split('/');
+            const emprendimientoId = parts[3];
+          
+
+
+
+           
+            try {
+            myid = new ObjectId(emprendimientoId);  // Intentar convertir a ObjectId
+            } catch (e) {
+            console.error("Error al convertir el ID:", e);  // Ver si hay algún error en la conversión
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'ID inválido' }));
+            return;
+            }
+
+           
+
+
+            const emprendimientosCollection = db.collection('emprendimientos');
+            const resultado = await emprendimientosCollection.updateOne(
+                { _id: myid },  // Buscar el emprendimiento por ID
+                { $set: { habilitado: false } }  // Actualizar el campo habilitado a false
+            );
+            
+
+            if (resultado.matchedCount === 0) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
+                return;
+            }
+
+            console.log(resultado);
+
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Cliente eliminado exitosamente' }));
+        }
         // RUTA NO ENCONTRADA
         else {
             res.writeHead(404, { 'Content-Type': 'application/json' });

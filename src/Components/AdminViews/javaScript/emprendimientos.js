@@ -1,30 +1,6 @@
-// Simulación de datos dinámicos
-const emprendimientos = [
-    {
-        nombre: "El corral",
-        direccion: "1ª CALLE ORIENTE 11, Santa Tecla",
-        telefono: "74887817",
-        correo: "corral@gmail.com",
-        descripcion: "Somos una empresa de asados",
-        imagen: "../../../images/emprendimiento.png"
-    },
-    {
-        nombre: "Food Express",
-        direccion: "1ª CALLE ORIENTE 11, Santa Tecla",
-        telefono: "74887817",
-        correo: "foodexpress@gmail.com",
-        descripcion: "Somos un restaurante de comida rápida china",
-        imagen: "../../../images/emprendimiento.png"
-    },
-    {
-        nombre: "La Pizzeria",
-        direccion: "Av. Sur 21, San Salvador",
-        telefono: "75678911",
-        correo: "pizzeria@gmail.com",
-        descripcion: "Deliciosas pizzas italianas",
-        imagen: "../../../images/emprendimiento.png"
-    }
-];
+document.addEventListener("DOMContentLoaded", () => {
+    fetchEmprendimientos();  // Load emprendimientos on page load
+});
 
 // Contenedor de tarjetas
 const container = document.getElementById("emprendimientos-container");
@@ -73,18 +49,85 @@ function displayEmprendimientos(emprendimientos) {
 
         const declineBtn = document.createElement("button");
         declineBtn.className = "button-decline";
-        declineBtn.textContent = "Declinar";
+        declineBtn.textContent = "Deshabilidar";
+
+
+        
 
         // Agregar elementos al DOM
         cardInfo.append(title, direccion, telefono, correo, descripcion);
         buttons.append(acceptBtn, declineBtn);
         card.append(img, cardInfo, buttons);
         container.appendChild(card);
+
+        // Agregar evento al botón "Deshabilitar"
+        declineBtn.addEventListener("click", () => {
+            // Llamar a la función para deshabilitar el emprendimiento
+            disableEmprendimiento(emprendimiento._id); 
+             // Refresh the list after disabling // Asegúrate de que 'id' es el identificador único de cada emprendimiento
+        });
     });
 }
 
 // Renderizar los emprendimientos iniciales
-displayEmprendimientos(emprendimientos);
+//displayEmprendimientos(emprendimientos);
+
+
+
+
+async function disableEmprendimiento(id) {
+    try {
+        // Realizar la solicitud PATCH (o PUT dependiendo de la API)
+        const response = await fetch(`http://localhost:3000/admin/emprendimientos/${id}`, { // Reemplaza con la URL de tu API
+            method: "PATCH",  // O usa "PUT" si es necesario
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                habilitado: false,  // Cambiar el campo 'habilitado' a false
+            }),
+        });
+        console.log("Deshabilitar emprendimiento con ID:", id);  // Verificar que el ID se pasa correctamente
+        console.log(response);
+        if (!response.ok) {
+            throw new Error("No se pudo deshabilitar el emprendimiento");
+        }
+
+        // Si la solicitud es exitosa, puedes actualizar la vista o realizar otras acciones
+        alert("Emprendimiento deshabilitado exitosamente");
+        fetchEmprendimientos();  // Vuelve a cargar los emprendimientos actualizados
+    } catch (error) {
+        console.error("Error al deshabilitar el emprendimiento:", error);
+    }
+}
+
+
+
+// Función para obtener los emprendimientos habilitados
+async function fetchEmprendimientos() {
+    try {
+        
+        const response = await fetch("http://localhost:3000/emprendimientos", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        }); // Reemplaza con la URL de tu API
+        const data = await response.json();
+        console.log(data);
+
+        
+       // Filter only enabled emprendimientos
+       const emprendimientosHabilitados = data.filter(emp => emp.habilitado === true);
+       displayEmprendimientos(emprendimientosHabilitados);
+
+    
+    } catch (error) {
+        console.error("Error al obtener los emprendimientos:", error);
+    }
+}
+
+
 
 // Evento para filtrar cuando el usuario escribe en la barra de búsqueda
 searchInput.addEventListener("input", (e) => {
@@ -92,6 +135,8 @@ searchInput.addEventListener("input", (e) => {
     const filteredEmprendimientos = emprendimientos.filter(emp =>
         emp.nombre.toLowerCase().includes(query)
     );
-    displayEmprendimientos(filteredEmprendimientos);
+    //displayEmprendimientos(filteredEmprendimientos);
+ // Refresh the list after disabling // Asegúrate de que 'id' es el identificador único de cada emprendimiento
+
 });
 
