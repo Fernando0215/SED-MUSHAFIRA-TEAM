@@ -52,7 +52,7 @@
         console.error("No se proporcionó el ID del emprendimiento para el enlace de comentarios.");
     }
            
-            const response = await fetch(`http://192.68.134.131/emprendimientos/${emprendimientoId}`);
+            const response = await fetch(`http://192.168.77.39/emprendimientos/${emprendimientoId}`);
             if (!response.ok) throw new Error("Error al cargar el emprendimiento.");
             const emprendimiento = await response.json();
             

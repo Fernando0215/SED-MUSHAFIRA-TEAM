@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         try {
             // Enviar datos al servidor
-            const response = await fetch('http://192.68.134.131/clientes/register', {
+            const response = await fetch('http://192.168.77.39/clientes/register', {
                 method: 'POST',
                 body: formData,
             });
