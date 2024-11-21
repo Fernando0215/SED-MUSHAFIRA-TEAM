@@ -32,9 +32,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // Mostrar imagen de perfil si existe
         if (emprendimiento.imagenEmprendimiento) {
-            profileImage.src = `http://localhost:3000${emprendimiento.imagenEmprendimiento}`;
+            profileImage.src = emprendimiento.imagenEmprendimiento;
             profileImage.style.display = "block";
             uploadLabel.style.display = "none";
+        } else {
+            profileImage.style.display = "none";
+            uploadLabel.style.display = "block";
         }
 
         // Mostrar el nombre del emprendimiento

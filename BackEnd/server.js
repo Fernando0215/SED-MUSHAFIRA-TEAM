@@ -11,26 +11,14 @@ const formidable = require('formidable');
 const { subirImagen, obtenerImagen } = require('./src/routes/images.router.js'); // Asegúrate de importar bien
 const fs = require('fs');
 const fsPath = require('path');
-const { login } = require('../BackEnd/src/controllers/auth.controller.js')
 const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
-
-
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection:', promise, 'reason:', reason);
-});
-
 
 const UPLOADS_DIR = fsPath.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR);
 }
 
-const ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg'];
 // Función para leer el cuerpo de la solicitud
 async function parseRequestBody(req) {
     return new Promise((resolve, reject) => {
@@ -49,25 +37,18 @@ async function parseRequestBody(req) {
                 }
             });
         } else if (contentType.startsWith('multipart/form-data')) {
-            const form = new formidable.IncomingForm({
-                multiples: true, // Permitir múltiples archivos
-                uploadDir: UPLOADS_DIR, // Carpeta donde se guardarán los archivos
-                keepExtensions: true, // Mantener la extensión original de los archivos
-            });
-
+            const form = new formidable.IncomingForm({ multiples: true });
             form.parse(req, (err, fields, files) => {
                 if (err) {
                     return reject(err);
                 }
 
-                const file = files.bannerImage || files.imagenProducto;
+                // Convertir los valores de los campos a strings simples
+                const normalizedFields = Object.fromEntries(
+                    Object.entries(fields).map(([key, value]) => [key, Array.isArray(value) ? value[0] : value])
+                );
 
-                // Validar que el archivo tenga un nombre válido
-                if (file && !file.originalFilename) {
-                    return reject(new Error('El archivo no tiene un nombre válido.'));
-                }
-
-                resolve({ fields, files });
+                resolve({ fields: normalizedFields, files });
             });
         } else {
             reject(new Error('Unsupported content type'));
@@ -128,7 +109,7 @@ const server = http.createServer(async (req, res) => {
             }
 
             const file = files.fotoPerfil;
-            const fileExtension = fsPath.extname(file.originalFilename); // Obtener la extensión
+            const fileExtension = path.extname(file.originalFilename); // Obtener la extensión
             const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
             const filePath = fsPath.join(UPLOADS_DIR, fileName);
 
@@ -140,6 +121,7 @@ const server = http.createServer(async (req, res) => {
         }
         else if (path.startsWith('/uploads/') && method === 'GET') {
             const filePath = fsPath.join(__dirname, path);
+
 
             if (!fs.existsSync(filePath)) {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -389,70 +371,92 @@ const server = http.createServer(async (req, res) => {
             });
         }
 
-
-
-
         // RUTA: Crear emprendimiento
         else if (path === '/emprendimientos/register' && method === 'POST') {
             const { fields, files } = await parseRequestBody(req);
             const { nombreEmprendimiento, infoContacto, correo, direccion, password, confirmpassword, descripcion } = fields;
 
-            try {
-                if (password !== confirmpassword) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Las contraseñas no coinciden' }));
-                    return;
-                }
 
-                delete fields.confirmpassword;
-                await validarEmprendimiento(fields);
-
-                const emprendimientosCollection = db.collection('emprendimientos');
-                const emprendimientoExistente = await emprendimientosCollection.findOne({ correo });
-
-                if (emprendimientoExistente) {
-                    res.writeHead(409, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'El correo ya está registrado. Intente con otro correo.' }));
-                    return;
-                }
-
-                let imagenEmprendimiento = null;
-                if (files && files.imagenEmprendimiento && files.imagenEmprendimiento[0].filepath) {
-                    const file = files.imagenEmprendimiento[0];
-                    const fileExtension = fsPath.extname(file.originalFilename || '.jpeg');
-                    const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
-                    const filePath = fsPath.join(UPLOADS_DIR, fileName);
-
-                    fs.renameSync(file.filepath, filePath);
-                    imagenEmprendimiento = `/uploads/${fileName}`;
-                }
-
-                const hashPassword = crypto.createHash('sha256').update(password).digest('hex');
-                const emprendimiento = {
-                    nombreEmprendimiento,
-                    infoContacto,
-                    correo,
-                    direccion,
-                    password: hashPassword,
-                    descripcion,
-                    imagenEmprendimiento,
-                };
-
-                const resultado = await emprendimientosCollection.insertOne(emprendimiento);
-
-                res.writeHead(201, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Emprendimiento registrado exitosamente', emprendimientoId: resultado.insertedId }));
-            } catch (error) {
-                console.error("Error al registrar el emprendimiento:", error);
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: "Error interno del servidor" }));
+            if (password !== confirmpassword) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Las contraseñas no coinciden' }));
+                return;
             }
+
+
+
+            delete fields.confirmpassword;
+            await validarEmprendimiento(fields);
+
+
+            const emprendimientosCollection = db.collection('emprendimientos');
+
+            const emprendimientoExistente = await emprendimientosCollection.findOne({
+                $or: [
+                    { correo },
+                ]
+            });
+            if (emprendimientoExistente) {
+                res.writeHead(409, { 'Content-Type': 'application/json' });
+                res.end(
+                    JSON.stringify({
+                        error: emprendimientoExistente.correo === correo
+                            ? 'El correo ya está registrado. Intente con otro correo.'
+                            : ''
+                    })
+                );
+                return;
+            }
+
+
+            let imagenEmprendimiento = null;
+            console.log(files);
+            if (files && files.imagenEmprendimiento && files.imagenEmprendimiento.length > 0) {
+                //const file = files.imagenEmprendimiento;
+                const file = files.imagenEmprendimiento[0]; // Access the first file if it's an array
+                // Verificar si el archivo tiene una ruta válida
+                if (file.filepath) {
+                    const uploadDir = fsPath.join(__dirname, 'uploads');
+
+                    // Crear la carpeta si no existe
+                    if (!fs.existsSync(uploadDir)) {
+                        fs.mkdirSync(uploadDir);
+                    }
+
+                    // Generar un nombre único para el archivo
+                    const fileName = `${Date.now()} -${file.originalFilename}`;
+                    const filePath = fsPath.join(uploadDir, fileName);
+
+                    // Mover el archivo desde la ubicación temporal a la carpeta final
+                    fs.renameSync(file.filepath, filePath);
+
+                    imagenEmprendimiento = `/uploads/${fileName}`; // Ruta relativa de la imagen
+                } else {
+                    console.error('El archivo no tiene una ruta válida.');
+                }
+            }
+
+            const hashPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+            const emprendimiento = {
+                nombreEmprendimiento,
+                infoContacto,
+                correo,
+                imagenEmprendimiento,
+                direccion,
+                password: hashPassword,
+                descripcion
+
+            };
+
+            const resultado = await emprendimientosCollection.insertOne(emprendimiento);
+            res.writeHead(201, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'Cliente registrado exitosamente', clienteId: resultado.insertedId }));
+
         }
 
 
         // login de ambos 
-
-
         else if (path === '/login' && method === 'POST') {
             console.log('Login request received');
             try {
@@ -525,60 +529,98 @@ const server = http.createServer(async (req, res) => {
                 return;
             }
 
+            // Asegúrate de que la URL de la imagen sea completa
+            if (emprendimiento.imagenEmprendimiento) {
+                emprendimiento.imagenEmprendimiento = `http://localhost:3000${emprendimiento.imagenEmprendimiento}`;
+            }
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(emprendimiento));
         }
 
-        else if (path === '/emprendimientos/banner' && method === 'POST') {
+        else if (path === "/emprendimientos/banner" && method === "POST") {
             await verificarToken(req, res, async () => {
-                try {
-                    const { files } = await parseRequestBody(req);
-        
-                    if (!files || !files.bannerImage) {
-                        res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'No se subió ninguna imagen de banner' }));
+                const form = new formidable.IncomingForm({
+                    multiples: false,
+                    uploadDir: UPLOADS_DIR,
+                    keepExtensions: true,
+                });
+
+                form.parse(req, async (err, fields, files) => {
+                    if (err) {
+                        console.error("Error al procesar el formulario:", err);
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Error al procesar el formulario." }));
                         return;
                     }
-        
-                    const file = files.bannerImage;
-        
-                    if (!file.originalFilename) {
-                        res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'El archivo no tiene un nombre válido' }));
+
+                    let bannerPath = null;
+                    if (files.banner) {
+                        const file = files.banner;
+                        const fileExtension = fsPath.extname(file.originalFilename || ".jpeg").toLowerCase();
+
+                        // Validar la extensión del archivo
+                        if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+                            res.writeHead(400, { "Content-Type": "application/json" });
+                            res.end(JSON.stringify({ error: "Formato de archivo no permitido." }));
+                            return;
+                        }
+
+                        // Generar un nombre único para el archivo
+                        const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
+                        const filePath = fsPath.join(UPLOADS_DIR, fileName);
+
+                        // Mover el archivo a la carpeta final
+                        fs.renameSync(file.filepath, filePath);
+
+                        bannerPath = `/uploads/${fileName}`;
+                    } else {
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "No se recibió el archivo banner." }));
                         return;
                     }
-        
-                    const fileExtension = fsPath.extname(file.originalFilename).toLowerCase();
-                    const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
-                    const filePath = fsPath.join(UPLOADS_DIR, fileName);
-        
-                    // Mover el archivo al directorio final
-                    fs.renameSync(file.filepath, filePath);
-        
-                    const bannerPath = `/uploads/${fileName}`;
-                    const emprendimientosCollection = db.collection('emprendimientos');
-        
-                    const result = await emprendimientosCollection.updateOne(
+
+                    // Actualizar el registro en la base de datos
+                    const result = await db.collection("emprendimientos").updateOne(
                         { _id: new ObjectId(req.usuario.id) },
                         { $set: { bannerImage: bannerPath } }
                     );
-        
+
                     if (result.matchedCount === 0) {
-                        res.writeHead(404, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Emprendimiento no encontrado' }));
+                        res.writeHead(404, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Emprendimiento no encontrado." }));
                         return;
                     }
-        
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: 'Banner actualizado exitosamente', bannerImage: bannerPath }));
+
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Banner actualizado exitosamente.", bannerImage: bannerPath }));
+                });
+            });
+        }
+
+        else if (path === "/emprendimientos/banner" && method === "GET") {
+            await verificarToken(req, res, async () => {
+                try {
+                    const emprendimiento = await db.collection("emprendimientos").findOne({ _id: new ObjectId(req.usuario.id) });
+
+                    if (!emprendimiento || !emprendimiento.bannerImage) {
+                        res.writeHead(404, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ error: "Banner no encontrado." }));
+                        return;
+                    }
+
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ bannerImage: emprendimiento.bannerImage }));
                 } catch (error) {
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Error interno al actualizar el banner' }));
+                    console.error("Error al obtener el banner:", error);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ error: "Error interno del servidor." }));
                 }
             });
         }
-        
-        
+
+
+
 
         // RUTA: Obtener todos los emprendimientos
         else if (path === '/emprendimientos' && method === 'GET') {
@@ -662,57 +704,53 @@ const server = http.createServer(async (req, res) => {
             await verificarToken(req, res, async () => {
                 try {
                     const { fields, files } = await parseRequestBody(req);
-                    const { nombre, descripcion, precio } = fields;
-
-                    if (!nombre || !descripcion || !precio || !files || !files.imagenProducto) {
-                        console.error("Faltan campos requeridos:", { nombre, descripcion, precio });
+        
+                    if (!fields.nombre || !fields.descripcion || !fields.precio || !files || !files.imagenProducto) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Faltan campos requeridos o archivo de imagen' }));
-                        return;
+                        return res.end(JSON.stringify({ error: 'Faltan campos requeridos o archivo de imagen' }));
                     }
-
+        
                     const file = files.imagenProducto;
-
-                    // Validar que el archivo tenga un nombre original
-                    if (!file.originalFilename) {
-                        res.writeHead(400, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'El archivo no tiene un nombre válido' }));
-                        return;
+                    let filePath = null;
+        
+                    if (file.filepath) {
+                        const uploadDir = fsPath.join(__dirname, 'uploads');
+        
+                        if (!fs.existsSync(uploadDir)) {
+                            fs.mkdirSync(uploadDir);
+                        }
+        
+                        const fileName = `${Date.now()}-${file.originalFilename}`;
+                        filePath = fsPath.join(uploadDir, fileName);
+        
+                        fs.renameSync(file.filepath, filePath); // Mover archivo a 'uploads'
                     }
-
-                    const fileExtension = fsPath.extname(file.originalFilename);
-                    const fileName = `${Date.now()}-${crypto.randomUUID()}${fileExtension}`;
-                    const filePath = fsPath.join(UPLOADS_DIR, fileName);
-
-                    fs.renameSync(file.filepath, filePath);
-
+        
                     const nuevoProducto = {
-                        nombre,
-                        descripcion,
-                        precio: parseFloat(precio),
-                        imagenProducto: `/uploads/${fileName}`,
-                        emprendimientoId: req.usuario.id,
+                        nombre: fields.nombre,
+                        descripcion: fields.descripcion,
+                        precio: parseFloat(fields.precio),
+                        imagenProducto: filePath ? `/uploads/${filePath.split('/').pop()}` : null,
+                        emprendimientoId: req.usuario.id, // Asociar al emprendimiento autenticado
                     };
-
+        
                     const productosCollection = db.collection('productos');
                     const resultado = await productosCollection.insertOne(nuevoProducto);
-
-                    console.log("Producto creado correctamente:", nuevoProducto);
-
+        
                     res.writeHead(201, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({
                         message: 'Producto creado exitosamente',
-                        producto: { id: resultado.insertedId, ...nuevoProducto },
+                        producto: { ...nuevoProducto, _id: resultado.insertedId }
                     }));
-
                 } catch (error) {
-                    console.error("Error al crear producto:", error);
+                    console.error('Error al guardar producto:', error);
                     res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Error interno al crear el producto' }));
+                    res.end(JSON.stringify({ error: 'Error interno del servidor' }));
                 }
             });
         }
-
+        
+        
 
 
         // RUTA: Crear comentario en un emprendimiento

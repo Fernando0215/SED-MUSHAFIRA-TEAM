@@ -1,85 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emprendimiento</title>
-    <link rel="stylesheet" href="../css/emprendimientos.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle del Emprendimiento</title>
+  <link rel="stylesheet" href="../css/emprendimiento.css">
 </head>
 <body>
-    <!-- Flecha de regreso -->
-    <a href="javascript:history.back()" class="back-arrow">&larr;</a>
-    
-    <!-- Contenedor principal -->
-    <div class="container">
-        <!-- Banner -->
-        <div class="banner">
-            <img id="banner-img" src="../../../images/banner.png" alt="Moonlight Caffe & Lounge">
-        </div>
-
-        <!-- Comentarios -->
-        <a id="comments-link" href="comentarios.html" class="comments-title">Comentarios</a>
-
-        <!-- Productos -->
-        <div id="products-container" class="products-container">
-            <!-- Los productos se añadirán dinámicamente -->
-        </div>
+  <div id="emprendimiento-detalle">
+    <div id="emprendimiento-info" class="emprendimiento-info">
+      <!-- Aquí se cargará la información del emprendimiento -->
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", async function () {
-            const bannerImg = document.getElementById("banner-img");
-            const productsContainer = document.getElementById("products-container");
-            const commentsLink = document.getElementById("comments-link");
-            const urlParams = new URLSearchParams(window.location.search);
-            const emprendimientoId = urlParams.get("id"); // Obtener ID del emprendimiento desde la URL
+    <h2>Productos</h2>
+    <div id="productos-lista" class="productos-lista">
+      <!-- Aquí se añadirán dinámicamente los productos -->
+    </div>
 
-            if (!emprendimientoId) {
-                console.error("No se proporcionó el ID del emprendimiento.");
-                return;
-            }
+    <h2>Comentarios</h2>
+    <div id="comentarios-lista" class="comentarios-lista">
+      <!-- Aquí se añadirán dinámicamente los comentarios -->
+    </div>
+  </div>
 
-            // Cargar datos del emprendimiento
-            try {
-            const response = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}`);
-            if (!response.ok) throw new Error("Error al cargar el emprendimiento.");
-            const emprendimiento = await response.json();
-
-            if (emprendimiento.bannerImage) {
-                bannerImg.src = `http://localhost:3000${emprendimiento.bannerImage}`;
-                bannerImg.style.display = "block";
-            } else {
-                noBannerText.style.display = "block";
-            }
-            } catch (error) {
-                console.error("Error al cargar el emprendimiento:", error);
-                bannerImg.src = "/uploads/defaultBanner.png"; // Imagen predeterminada
-            }
-
-            // Cargar productos del emprendimiento
-            try {
-                const productsResponse = await fetch(`http://localhost:3000/emprendimientos/${emprendimientoId}/productos`);
-                if (!productsResponse.ok) throw new Error("Productos no encontrados.");
-
-                const productos = await productsResponse.json();
-                productsContainer.innerHTML = ""; // Limpiar contenedor
-
-                productos.forEach(producto => {
-                    const productCard = `
-                        <div class="product-card">
-                            <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" class="product-image">
-                            <h2 class="product-name">${producto.nombre}</h2>
-                            <p class="product-price">$${producto.precio}</p>
-                            <p class="product-description">${producto.descripcion}</p>
-                        </div>
-                    `;
-                    productsContainer.innerHTML += productCard;
-                });
-            } catch (error) {
-                console.error("Error al cargar productos:", error);
-                productsContainer.innerHTML = `<p>No se encontraron productos para este emprendimiento.</p>`;
-            }
-        });
-    </script>
+  <script src="../javaScript/productos.js" defer></script>
 </body>
 </html>

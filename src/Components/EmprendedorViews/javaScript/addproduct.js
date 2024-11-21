@@ -5,19 +5,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saveProductBtn = document.getElementById("save-product-btn");
     const productList = document.getElementById("product-list");
 
-    if (!saveProductBtn) {
-        console.error("El botón 'Guardar' no se encontró en el DOM. Verifica el ID.");
-        return;
-    }
-
-    const token = localStorage.getItem('authToken'); // Obtén el token dinámicamente
-
+    const token = localStorage.getItem("authToken");
     if (!token) {
-        console.error("No se encontró un token. Asegúrate de iniciar sesión.");
+        alert("Debe iniciar sesión para gestionar productos.");
         return;
     }
 
-    // Abrir modal para añadir producto
+    // Abrir modal
     addProductBtn.addEventListener("click", () => {
         productModal.style.display = "flex";
     });
@@ -29,17 +23,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Guardar producto
     saveProductBtn.addEventListener("click", async () => {
-        const nameInput = document.getElementById("product-name");
-        const descriptionInput = document.getElementById("product-description");
-        const priceInput = document.getElementById("product-price");
-        const fileInput = document.getElementById("upload-product-image");
+        const nameInput = document.getElementById("product-name").value;
+        const descriptionInput = document.getElementById("product-description").value;
+        const priceInput = document.getElementById("product-price").value;
+        const fileInput = document.getElementById("upload-product-image").files[0];
 
-        const file = fileInput.files[0];
+        if (!nameInput || !descriptionInput || !priceInput || !fileInput) {
+            alert("Por favor, complete todos los campos.");
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("nombre", nameInput.value);
-        formData.append("descripcion", descriptionInput.value);
-        formData.append("precio", priceInput.value);
-        if (file) formData.append("imagenProducto", file);
+        formData.append("nombre", nameInput);
+        formData.append("descripcion", descriptionInput);
+        formData.append("precio", priceInput);
+        formData.append("imagenProducto", fileInput);
+
+
+        if (fileInput.name.trim() === "") {
+            alert("El archivo no tiene un nombre válido.");
+            return;
+        }
+        
 
         try {
             const response = await fetch("http://localhost:3000/productos", {
@@ -50,29 +55,63 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: formData,
             });
 
-            if (!response.ok) {
-                const errorResponse = await response.json();
-                throw new Error(errorResponse.error || "Error al guardar el producto");
-            }
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error);
 
-            const { producto } = await response.json();
-            console.log("Producto creado:", producto);
+            const producto = result.producto;
 
-            // Actualizar lista de productos
+            // Añadir producto a la lista
             const productCard = document.createElement("div");
             productCard.classList.add("product-card");
             productCard.innerHTML = `
                 <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" />
                 <h3>${producto.nombre}</h3>
-                <p>${producto.descripcion}</p>
-                <p>$${producto.precio}</p>
+                <p>Descripción: ${producto.descripcion}</p>
+                <p>$${producto.precio.toFixed(2)}</p>
             `;
-            productList.appendChild(productCard);
-            
 
+            // Mostrar descripción al hacer clic
+            productCard.addEventListener("click", () => {
+                alert(producto.descripcion);
+            });
+
+            productList.appendChild(productCard);
+
+            // Limpiar el modal y cerrarlo
+            document.getElementById("product-name").value = "";
+            document.getElementById("product-description").value = "";
+            document.getElementById("product-price").value = "";
+            document.getElementById("upload-product-image").value = "";
             productModal.style.display = "none";
         } catch (error) {
-            console.error(error);
+            alert("Error al guardar el producto: " + error.message);
         }
     });
+
+    // Cargar productos existentes
+    try {
+        const response = await fetch("http://localhost:3000/productos", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const productos = await response.json();
+        productos.forEach((producto) => {
+            const productCard = document.createElement("div");
+            productCard.classList.add("product-card");
+            productCard.innerHTML = `
+                <img src="http://localhost:3000${producto.imagenProducto}" alt="${producto.nombre}" />
+                <h3>${producto.nombre}</h3>
+                <p>$${producto.precio.toFixed(2)}</p>
+            `;
+            productCard.addEventListener("click", () => {
+                alert(producto.descripcion);
+            });
+
+            productList.appendChild(productCard);
+        });
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+    }
 });
